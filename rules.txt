@@ -1,0 +1,685 @@
+Prospector,captain,mayor,trader,settler,craftsman,orbuilder?
+Whichroleswillyouplayinthenewworld?Willyouownthemost
+prosperousplantations?Willyoubuildthemostvaluablebuildings?
+Youhavebutonegoal:achievethegreatestprosperityandhighestrespect!
+Thisisshownbytheplayerwhoearnsthemostvictorypoints?
+GOAL
+The game is played over several rounds. In each round, each player
+chooses one of seven different roles and, thereby, offers allplayers, in
+clockwiseorder,theactionassociatedwiththatrole.
+So, for example, with the settler, players can place new plantations, on
+which,withthehelpofthecraftsman,playerscanproducegoods.Players
+canthensellthesegoodstothetradinghousewiththetraderor,withthe
+captain, ship them to the old world. With the money earned from such
+sales,theplayers.withthebuilder,maybuildbuildingsinthecity,andso
+on.The player who best manages the changing roles with their associatedactionsandspecialprivileges,willachievethegreatestprosperityandthehighestrespectand,thereby,winthegame.The winner is the player who earns the most victory points.
+CONTENTS
+5 player boards eachhas12islandspacesand12cityspacesas
+wellasasummaryofthe7roles
+1 governor card indicatesthestartingplayeroftheround
+8 role cards oneeachofsettler,mayor,builder,craftsman,trader,andcaptain;and2prospectors
+1 game board forthevariousbuildingsandthemoney
+49 buildings 5largevioletbuildings(2spaces),
+2eachof12smallvioletbuildings,and
+20non-violetproductionbuildings
+54 doubloons 46@1and8@5
+58 island tiles 8quarrytilesand50plantationtiles:8coffee,9tobacco,10corn,11sugar,and12indigo
+1 colonist ship forthecolonists
+100 colonists brownroundwoodenmarkers
+1 trading house forsellinggoods
+50 goods 9ofcoffee(dkbrown)andtobacco(ltbrown),10ofcorn(yellow),11ofsugar(white)
+andindigo(blue)woodenbarrels
+5 cargo ships forsendinggoodstotheoldworld
+50 VP chips hexagonalchips:32@1and18@5A
+NDREASSEYFARTH
+GOAL
+The players go from round toround in different roles andinitiate the associated actions.
+Players place plantations and
+build buildings. They produce
+goods and then sell or shipthem.
+The player with the most
+points at game end is thewinner!
+Thetextinthesidebarsbothsummarizestherulesandoffersinformationaboutspecificspecialcircumstances
+whichmayoccur.Werecommendyoureadthroughthemainrulesbeforereadingtheinformationinthesidebars.
+2
+•all 8 quarry tiles (face-up)
+•all remaining plantation tiles
+(wellshuffledin5face-downstacks)
+•4, 5, or 6 plantation tiles (onemorethanthenumberof
+players)aretakenfromtheface-downstacksandplaced
+face-upnexttothequarrytilestack.•the victory point chips (in2separatepiles):
+-with3players: 75points
+-with4players: 100points
+-with5players: all122points
+•the role cards
+-with3players: allcardsexcept
+bothprospectors(=6cards)
+-with4players: allcardsexcept
+oneprospector(=7cards)
+-with5players: all8cards
+•three cargo ships
+-with3players: theshipswith
+4,5,and6cargospaces
+-with4players: theshipswith
+5,6,and7cargospaces
+-with5players: theshipswith
+6,7,and8cargospaces
+•all goods
+(in5separatepiles)
+•the trading house
+•the colonist ship
+with3,4or5colonists,depending
+onthenumberofplayers
+•the brown colonist markers
+(assupplypile)
+-with3players: 55colonists
+-with4players: 75colonists
+-with5players: 95colonists
+Placeunusedmaterialbackinthebox.PREPARATION
+Placethe game board inthemiddleofthetable.Place all the buildings ontheirassignedspacesonthegame
+board(seebelow).
+Sortthe doubloons byvalueandplacethemonthebankonthegameboard(seebelow).
+Each player takes:
+• 1 player board (placedbeforehimonthetable)
+•money:
+-with3players: 2doubloons -with4players: 3doubloons -with5players: 4doubloons
+Theplayersstoretheirdoubloonsonthewindroseontheirplayerboards,sothatallplayerscanseehowmuchmoneyeachplayerhas.
+• 1 plantation tile. First,theplayerschooseastartingplayerusinganymethodtheychoose.Thisplayertakes
+thegovernor card andablueindigotile(whichheplacesface-upon anyofthe12spacesonhisisland).The
+otherplayerstakethefollowinginclockwiseorder:-with3players:
+2ndplayer:indigo/3rdplayer:corn
+-with4players: 2ndplayer:indigo/3rdand4thplayers:corn
+-with5players: 2ndand3rdplayers:indigo/4thand5thplayers:corn
+Placethe remaining material asshowninthebelowillustration:
+(note:theillustrationbelowisfora4playergame)
+PLAYINGTHEGAME
+The governor begins and
+chooses a role card; all players
+take the associated action, in
+clockwise order.
+The next player chooses a role
+card and all players take the
+associated action as before.
+At the end of the round, place
+1 doubloon on the unused rolecards.
+The governor card goes to the
+next player in clockwise order,and the game continues.
+THE ROLES
+- every player is allowed to
+take the action associated
+with the role (exception:
+prospector)
+- the privilege associated with
+the role may only be used by
+the player taking the role
+card
+action:
+each player takes
+and places aplantation tileprivilege:
+the settler may
+take and place a
+quarry, instead
+at the end of the settler phase:
+new plantation tiles are drawn
+3
+PLAYING THE GAME
+Thegameisplayedoverseveralrounds(about15).Eachroundisplayedinthe same way. The player with the governor card begins. He takes one of
+the role cards, places it face-up next to his player board, and takes the
+action allowed by the role card. Then, his left neighbor takes the actionallowedbythatrolecard,andsoonaroundthetable,inclockwiseorder,untileveryplayerhastakenthisaction once.
+Next,theleftneighborofthegovernortakeshisturn:hetakesoneoftheremainingrole cards, places it face-up next to his player board, and takes
+theactionallowedbytherolecard.Then, hisleftneighbortakestheaction
+allowedbythatrolecard,andsoonaroundthetable,inclockwiseorder,untileveryplayerhastakenthisaction once.Then,hisleftneighbortakes
+arolecard,andsoonuntilallplayershavetakenarolecardandallplayers
+takentheactionsallowedbytherolecardstaken.Next, place one doubloon on each of the three role cards that were not
+takenbyaplayerduringtheround.Then,placetheusedrolecardsbackonthetablenexttotheunusedcards.Theleftneighboroftheplayerwith
+thegovernorcardtakesthegovernorcard,becomingthegovernorforthenextround.Hebeginstheroundandthegamecontinuesasbefore.
+THE ROLES
+Eachrolegrantstheplayerwhotakesthecardaspecialprivilege,andalso,
+a specific action that can be taken by eachplayer, in clockwise order,
+startingwiththeplayerwhotooktherole (exception:prospector).
+Basicrulesforallrolecards:-Ifacardhasoneormoredoubloonsonit,theplayerwhotakesthecard
+getsthedoubloonsinadditiontotheprivilegeandactionassociatedwiththecard.
+-Theactionassociatedwitharolecardis alwaystakenfirstbytheplayer
+whotookthecard,followedbytheothersinclockwiseorder.
+-Aplayermust alwaystakearolecardwhenitishisturntodoso,buthe
+maychoosenottousetheactionorprivilegeofthecardhechoses.Theotherplayers,ofcourse,gettheirturnsattheactionofthecard.
+-Theactionofarolecardisoptional (exception:captain) .Aplayermay
+choosenottoorbeunabletousetheactiononhisturn.
+-Arolecardremainsinfrontoftheplayerwhotookituntiltheendof
+theround.Itmaynotbetakenbyanotherplayerintheround.
+THE SETTLER
+(settlerphase kplaceanewplantationontheisland)
+The player who chooses this role may take eithera quarry tile as his
+privilegeorone of the face-up plantation tiles andplaceiton anyempty
+islandspaceon hisplayerboard.Afterwards,eachotherplayer,inclockwise
+order, may take oneof the face-up plantationtiles (not a quarry tile! -
+exception:constructionhut )andplaceiton anyemptyislandspaceon his
+playerboard.
+Finally, the settler player puts the untaken plantation tiles face-up on a
+plantation discard stack and draws new plantation cards from the face-downstacks,placingthemface-upnexttothequarrystack.Hedraws one
+morethanthenumberofplayers.
+Notes:
+-Rememberthespecialfunctionsofthehacienda,constructionhut,andhospice.
+-Iftherearenotenoughplantationtilesleftintheface-downstacks,theplayerfirst
+drawsandplacesthose.Heshufflesthediscardedplantationtilesface-down,creates
+anewfacedownstack,andfillstheface-uprow.Ifthereareinsufficienttilestorefill
+theface-uprow,playersinfollowingroundsmayhavetodowithout.
+-Whereaplayerplacesquarryandplantationtilesonhisislandplaysnoroleinthe
+game.Thetilesmaynotberemovedfromtheisland.
+
+4action:
+each player takes
+and places
+colonistsprivilege:
+the mayor may takeone additionalcolonist
+examplefor4players
+mayor
+2ndplayer
+3rdplayer
+4thplayer
+mayor
+2ndplayer
+Themayortakes3colonists,the
+secondplayer2,andplayers3and
+4take1each.
+Each player may place allhis
+colonists on new empty circles.At the end of the phase, the
+mayor places new colonists onthe colonist ship.
+action:
+each player may
+build a buildingprivilege:
+the builder paysone less doubloon-Ifaplayerhasfilledall12islandspacesonhisplayerboard,hemaynotplace
+plantationorquarrytilesinfuturesettlerphases.
+-Iftherearenomorequarrytilesinthequarrytilestack,thesettlermaynotusehis
+privilegeandtheownersofaconstructionhutmaynotusethatspecialfunction.
+THE MAYOR (mayorphase karrivalofnewcolonists)
+Thetiles(plantation,quarry,orbuilding)have1to3circles.Aplayer may
+placeonecolonistoneachcircleonthetilesonhisplayerboard.Ifthereis
+atleastonecolonistonatile,itisconsideredoccupied.Onlyoccupiedtiles
+mayusetheirfunctions;unoccupiedtiles neverfunction!
+The player who chooses this role may first take one colonist from thecolonistsupply (notfromthecolonistship!)ashisprivilege.Next,theplayers
+take the colonists from the colonist ship oneat a time, starting with the
+mayor. The players continue to take one colonist at a time, in clockwiseorder,untilnoneremainonthecolonistship.
+A player may place his new colonist(s), together
+withallthe colonists he
+acquired from earlier rounds, on any empty circles on the tiles on his
+playerboard.Thus,aplayermaymoveacolonistplacedonacircleorSan
+Juaninanearlierround.Ifaplayercannotplaceallhiscolonists,
+hemay“store”themonthesmallcityofSanJuanonhisplayerboard.Thecolonistsremainthereuntilalatermayorphasewhentheymaybeplacedonemptycirclesontheplayer’stiles.
+As his last duty, the mayor puts new colonists on the colonistship to be used in the next mayor phase. For each empty circle
+on thebuildings
+on the player boards of allplayers (empty circles on
+plantationsandquarriesdo notcount!),themayortakesonecolonistfrom
+the colonist supply and places it on the colonist ship. However, as aminimum,themayorshouldalwaysplaceatleastasmanycolonistsontheshipasthereareplayersinthegame.
+Notes:
+-Usually,allplayersplace/movetheircolonistsatthesametime.If,however,the
+playersfeelthattheirplacementdecisionsmaydependonother’splacements,the
+playersshouldplacetheircolonistsisthefollowingorder:first,themayorand,then,
+theothersinclockwiseorderfromthemayor.
+-Ifamayorforgets(playersmayremindhim)toplacenewcolonistsonthecolonist
+ship,playerslaterplacetheminimum(numberofplayers)onthecolonistship.
+-Whenthecolonistsupplyrunsout,themayormaynotusehisprivilegeand,of
+course,hedoesnotrefillthecolonistship.
+-NoplayermaychoosetoplacecolonistsinSanJuanifhehasemptycircles
+availableonhisplayerboard.Allemptycirclesmustbefilled,ifpossible.Colonists
+maynotbeplacedonthecirclesotherthaninthemayorphase.
+THE BUILDER (builderphase kbuildbuildings)
+Theplayerwhochoosesthisrole,canimmediatelybuild onebuildingfor
+onedoubloonlessthanthenormalcostashisprivilege.Hepaysthemoney
+tothebank,takesthebuildingfromthesupply,andplacesitonanyempty space in the city on his player board. When
+placing a large building, the player needs two adjacentempty spaces. Then, the other players, in clockwise order
+from the builder, may, in the same way, each builds onebuilding(atnormalcost).
+Note:Noplayermaybuildmorethanonebuildingperround.
+Furtherinformationontheindividualbuildingsisattheendoftherules.
+cost
+victorypointsname
+1
+2
+3
+4
+5
+6
+Quarry
+Eachoccupiedquarry that a player owns may reduce the player’s cost for
+buildingabuildingby1doubloon.Thelimitforsuchreductionsisshown
+on the game board:players building buildings in the first column can
+reducetheircostbyatmost1doubloon(1occupiedquarry),inthesecond
+columnbyatmost2doubloons(2occupiedquarries),inthethirdcolumn
+byatmost3doubloons(3occupiedquarries),andinthefourthcolumnby
+at most 4 doubloons (4 occupied quarries). The mayor’s privilege
+reductionisinadditiontothequarryreduction,butthecostofabuilding
+maynotbereducedbelow0doubloons.Aplayerwith3occupiedquarries
+paysthefollowingcosts:constructionhut:1doubloon;office:3doubloons;
+harbor:5doubloons;cityhall:7doubloons.
+Notes:
+-Rememberthespecialfunctionoftheuniversity.
+-Ifthebuilderdoesnotbuildabuilding,hedoesnottake1doubloonforhisprivilege!
+-Itisnotpossibletobuildonmorethan12cityspaces.Aplayerwhohasnoempty
+cityspacesmaynotbuildmorebuildings.
+THE CRAFTSMAN (craftsmanphase kproductionofgoods)
+Theplayerwhochoosesthisrole,takesgoodsfromthesupplyaccordingto
+his production ability and places them on the windrose on his player
+board.Thus,thewindrosecontainsaplayer’smoneyandgoods.Next,the
+other players take goods from the supply according to their abilities, in
+clockwiseorderfromthecraftsman.Seemoredetailsonproductionabilitiesunder“Theproductionbuildings”.
+Ashislastduty,thecraftsmantakes one
+additionalgood(ofthosehecan
+produce)fromthesupplyashisprivilege.
+Notes:
+-Rememberthespecialfunctionofthefactory.
+-Ifthekindofgoodsaplayerproducesisexhaustedinthesupply,hegoeswithout.
+-Ifthecraftsmandoesnotproducegoods,hedoesnotgetanextragood(privilege).
+THE TRADER (traderphase ksellinggoods)
+Theplayerwhochoosesthisrole, mayimmediatelysell onegood
+tothetradinghouse.Hetakesfromthebankthepriceassociated
+withthegoodhesold(0-4doubloons) plus1 doubloon as his
+privilege.Then,inclockwiseorderfromthetrader,eachotherplayermaysellonegood to the trading house for the price
+shownaslongasthereisroomforitinthetradinghouse.Thetraderphaseendswhenallplayershavehadoneturntosellorwhenthetradinghouseisfull.
+Whenselling,usethefollowingrules:-Thetradinghousehasroomforjustfourgoods.Whenitisfull,noother
+playersmaysellgoodsinthistradingphase.
+-Thetradinghousebuysonly differentkindsofgoods( exception:office ).
+Ashislastduty,thetraderemptiesthetradinghouseifitisfullwith four
+goods,placingthemintheirseparatesupplypiles.Iftherearefewerthan
+fourgoodsinthetradinghouse,theyremainthere. Itwillbemoredifficultto
+sellgoodsinthenexttraderphase,becauseofthekindsofgoodsalreadythere
+andthefewernumberofspacesavailable.
+Notes:
+-Rememberthespecialfunctionsofthesmallandlargemarketsandtheoffice.
+-Ifthetraderdoesnotsell,hedoesnot collecttheextradoubloon(privilege).
+-Aplayermaysellcorntothetradinghouseeventhoughheearnsnomoneyfor
+doingso.
+5
+The building cost can bereduced with occupied
+quarries.
+action:
+all players take
+goods from the
+supplyprivilege:
+the craftsman takesan additional good
+Note:Thecraftsmanistheriskiest
+roleinthegame.Playersmustwatch
+carefullythattheydonothelptheir
+opponentsmorethanthemselvesbytakingthisrole!
+action:
+each player may, at
+most, sell 1 good to
+the trading houseprivilege:
+thetraderearns1
+extradoubloonwhenhesells
+The trading house buys onlydifferent goods (exception:
+office!).
+At the end of the phase, the
+trader empties the trading
+house if it is full.
+
+THE CAPTAIN (captainphase kshippingofgoods)
+The captain is in charge of shipping goods to the old world. This means
+thatthecaptainisthefirsttoloadgoodsonthecargoships.Then,theother
+playersfollow,inclockwiseorderfromthecaptain.
+Note:inthecaptainphase,eachplayermaygetseveralturnstoloadgoodsonthecargo
+ships.Whenitisaplayer’sturntoloadgoodsonacargoship,hemustloadifhecan.
+However,aplayermayloadgoodsofonlyone kindonaturn.
+Thecaptainphasecontinues,clockwisearoundthetable,aslongasatleast
+oneplayerhasgoodshecanload.
+Loading/shipping rules
+Whenshipping,playersmustfollowtheserules:-Eachcargoshipwillcarrygoodsofonly onekind.
+-Playersmaynotloadgoodsonacargoshipifgoodsofthatsamekind
+areononeoftheothertwocargoships.
+-Playersmaynotloadgoodsonafullship.-Onaplayer’sturn,he mustloadgoodsifhecan.However,hemayonly
+loadonekindofgoods.
+-Whenaplayerloadsgoodsofakind,he mustloadasmanyofthatkind
+ashecan.Aplayercannotholdbackgoodswhenthereisspaceonashipcarryingthekindofgoodshehas.Ifaplayerhasakindofgoodsthatcanbeloadedonseveralemptyships,hemustchoosetheshipwherehecanloadthemostgoods,leavingnonebehind,ifpossible.
+-Ifaplayerhasseveralkindsofgoodsthathecanload,hemaychoose
+freely,whichgoodstoload. Heneednotchoosethegoodsthatwouldallow
+himtoloadthemostbarrels.
+Victory pointsForeachgood(eachbarrel,noteachkindofgood)aplayerloads,heearns
+onevictorypoint(1VP)intheformofvalue1victorypointchips. When
+loadinggoodsontothecargoships,allkindsofgoodshavethesamevalue:1VP
+perbarrelloaded!Thegoodsvaluesusedinthetraderphasearenotusedhere.
+Whenloadinghisfirstkindofgoods,thecaptaintakesashisprivilege one
+extravictorypoint.HedoesnotgetextraVPsforeachkindheloads.Aplayerkeepshisvictorypoints,unlikehismoneyandgoods,secretfromtheothers.Aplayerputshisvictorypointchipsface-downonhiswindrose.Fromtimetotime,playersshouldconvert5value1chipsforasinglevalue
+5chip.
+Goods storage
+When no more goods can be loaded on the cargo ships, the players muststorethegoodsleftontheirwindroses.Eachplayermaystore one
+good(one
+barrel)on his windrose. For all other remaining goods, each player must
+find room in one of his warehouses (small or large). If a player does not
+havesufficientwarehousespace,hemustplaceallextragoodsbackinthe
+goodssupplies (seemoreinformationunder“smallwarehouse”) .
+Ashislastduty,thecaptainunloadsall fullshipsbyplacingthosegoodsback
+intheirseparatesupplypiles.Partiallyfullandemptyshipsremainasthey
+areuntilthenextcaptainphase. Itwillbemoredifficulttoloadgoodsinthe
+nextcaptainphase,becauseofthekindsofgoodsalreadyonthecargoships
+andthefewernumberofspacesavailable.
+Notes:
+-Rememberthespecialfunctionsofthesmallandlargewarehouses,theharbor,and
+thewharf.
+6
+action:
+the players must
+load goods on thecargo ships
+privilege:
+the captain earns 1
+extra victory point
+Each cargo ship can carry only
+goods of one kind, but notgoods like any other cargo
+ship.
+When no players can load any
+more goods, the captain phase
+ends and the captain emptiesall full cargo ships.
+Goods storage!
+Each player may store only one
+good (exception: warehouses!)
+exampleforthecaptainphase
+(with4players):
+Annaiscaptainandstartstheloading.She
+has2cornand6sugar.The5spaceshipand
+the7spaceshipareempty,andthereare3
+cornonthe6spaceship.Annamustload
+eitherher2cornor6sugar.Shechoosesthe
+sugarandloadsher6sugarbarrelsonthe7
+spaceship(shemaynotchoosethe5space
+shipasshecouldnotloadall6sugar).She
+earns7VPs(6+1forthecaptainprivilege).
+Bobisnext.Hehas2sugarand3tobacco.
+Hechoosessugarandloads1barrelonthe7spaceship,fillingit(hecannotloadhisothersugarasthereisnoroom).Hecould,instead,choosetoloadhis3tobaccoontheempty5spaceship,buthopestoselltobacco
+tothetradinghouselater.Heearns1VP.
+Chrisisnext.Shehas2cornand1tobacco.
+Shechoosestobaccoandloads1tobaccoon
+theempty5spaceship.Sheearns1VP.Davidisnext.Hehas1cornand5indigo.
+Hemustloadthecornonthe6spaceshipas
+hehasnoplaceforhisindigo.Heearns1VP.Annanowhasanotherturn.Shemustnow
+loadher2cornonthe6spaceship.She
+earns2moreVP.Bobhasnownochoicebuttoloadhis3
+tobaccoonthe5spaceship.Heearns3more
+VP.Chrisand Davidhavegoodsleft,butno
+placetoloadthem. Annaand Bobhaveno
+goodsleft.Thus,theloadingends.
+
+7
+Next, Chris,and Davidmuststorethegoods
+theyhaveleft.Astheybothhavemorethan
+1,theywillhavetoplacetheextrasin
+storageorlosethem.Finally, Annaunloads
+thetwofullships:the6spaceshipandthe7
+spaceship.The4tobaccoremainonthe5
+spaceship.
+action:
+none!
+privilege:
+the prospectortakes 1 doubloonfrom the bank
+end of the round:
+Place 1 doubloon on each of
+the three unused role cards.
+Return all used role cards.Give the governor card to the
+next player in clockwise order,who starts the next round…
+GAME END
+The game ends, when
+- there are not enough
+colonists to fill thecolonist ship
+- at least one player has built
+on his 12 city spaces
+- the victory point chips
+are exhausted
+Each player adds:
+- his VP chips +
+- the VP of his buildings +
+- the extra VP of his large
+buildings (when occupied!)
+The player with the mostvictory points is the winner.
+-Ifaplayercannotstoreallhisextragoods,hemaychoosewhichgoodstostoreand
+whichtoreturntothegoodssupply.
+-Thecaptainearnsonlyone extraVPashisprivilege,regardlessofhowmanykinds
+ofgoodsheloads.Ifheloadsnogoods,hedoesnot gettheextraprivilegeVP.
+-Playersonlycheckforgoodsstorageattheendofthecaptainphase.Playersstore
+goodsacquiredinotherphasesonthewindroseswithoutlimituntilthenextcaptain
+phase.
+THE PROSPECTORS
+The player who chooses this role initiates noaction, but receives as his
+privilege1doubloonfromthebank.
+A new round...
+Afterthelastplayerintheroundtakesaroleandallplayerscompletetheaction, if any, of the role, the round ends. Now, the governor takes threedoubloons from the bank, placing oneeach on the three role cards that
+werenotselectedduringtheround.Thedoubloonsareplacedregardlessof
+the number of doubloons already on the cards. Role cards with moredoubloonswillbemoreattractivetotheplayersastheygetthedoubloonsinaddition
+to the privilege of the card. For example, a player choosing a
+prospectorcardwith2doubloonswillget,intotal,3doubloonsforhiseffort.Finally,theplayersreturntherolecardstheyselectedtotheareanexttothe game board and the governor gives the governor card to his leftneighbor.Thenewgovernorbeginsthenextroundbyselectingarolecard,
+andsothegamecontinues.
+GAME END
+The game ends at the end of the round, in which at least one of the
+followingconditionsissatisfied:-attheendofthemayorphasetherearenotenoughcoloniststofillthe
+colonistshipasrequired;
+-duringthebuilderphase,atleastoneplayerbuildsonhis12thcity
+space;
+-duringthecaptainphase,thelastofthevictorypointchipsisused.
+Whenthevictorypointchipsareexhausted,playersearningvictorypoints
+thereaftershouldtrackthemwithpencilandpaper.
+The victory points of the players are now scored with pencil and paper.Eachplayeradds:-thevalueofhisVPchips(includingthosenotedonpencilandpaper)+-theVPvalueofhisbuildings (red-brownnumberinupperleft) +
+-theextraVPsofhisoccupiedlargebuildings
+Note:abuildingscoresitsvictorypointsevenwhenitisnotoccupied.Thus,for
+example,thefivelargebuildingsscore4VPeachwhentheyarenotoccupied.
+Thefivelargebuildingsscorethe extravictorypointsonlywhentheyare
+occupied!
+The player with the most victory points is the winner! If two or more
+players tie with the most VPs, the player with the most doubloons and
+goodstogether(1good=1doubloon)isthewinner.
+
+8
+THE BUILDINGS
+A player may build only
+one of each building.
+Only occupiedbuildings
+have any value.
+The production buildings
+For corn, there is no
+production building!
+The circles on the production
+buildings indicate the
+maximum number of goods the
+building can produce.
+THEBUILDINGS
+Forallbuildings:
+-Eachplayermaybuildeachbuildingonly once.
+-Whenatleastonecolonistisinthebuilding,itisconsidered occupied.
+Onlyoccupiedbuildingshaveanyvalue (exception:victorypoints) .
+-Whereabuildingisplacedinthecityhasnobearingonthegame.A
+buildingisplacedonanemptycityspace.Alargebuildingrequirestwo
+adjacentemptycityspaces.Abuildingmaybe movedwithinthecityto
+makeroomforalargebuilding.However,aswiththeplantationandquarrytilesontheisland,aplayermaynot removeabuildingfromhis
+city(to,forexample,makeroomforanotherbuildingorprolongthegame) .
+-Thered-brownnumberintheupperrightcornerofeachbuilding
+indicateshowmanyvictorypointsthebuildingisworth(occupiedorunoccupied)attheendofthegame.
+-Thenumberinthefirstcircleisthecosttobuildthebuilding.Once
+built,thebuildingcosthasnofurtherroleinthegame.
+The production buildings
+(blue,white,lightanddarkbrown)
+The production buildings are required, together with the plantations, for
+theproductionofcertaingoods:-Intheindigoprocessingplants,theindigoplantsareprocessedto
+produceindigodye(bluegoodsbarrels).
+-Inthesugarmills,thesugarcanesareprocessedintosugar(whitegoods
+barrels).
+-Inthetobaccostorage,thetobaccoleavesareshreddedintotobacco
+(lightbrownbarrels).
+-Inthecoffeeroasters,thecoffeebeansareroastedintocoffee(dark
+brownbarrels).
+-
+Note:thereisnoproductionfacilityneededforthecorn.Corn(yellowbarrels)come
+directlyfromtheplantationwithoutanyneedforprocessing.Thatmeansthat,in
+thecraftsmanphase,occupiedcornplantationsproducecorn(yellowbarrels)
+directly.
+Thenumberofcirclesontheproductionbuildingsindicatesthemaximumnumberofgoodsthebuildingcanproducewhenthecircleshavecolonists
+on them. Of course, the player must also have sufficientoccupied
+plantationsoftheappropriatekindtoproducetherawmaterialsneededtoproducethegoodsintheproductionbuildings.
+example
+The player producesthe following goods:
+2 corn barrels
+(as the 3rd corn plantationis not occupied)
+1 tobacco barrel
+(as the 2nd circle in the tobaccostorage has no colonist)
+3 sugar barrels
+(as the 4th sugar plantationis not occupied)
+
+9The violet buildings
+- the special functions may be
+used to break the rules
+- they need not be usedNotes:
+-Therawmaterialsusedinproductiondonotexistinthisgame.Intheexampleon
+page8,theplayersgetonlytheendproductsoftheirproduction.Theunused
+colonists(suchasthecolonistonthesecondtobaccoplantationandthefourth
+colonistinthesugarmills)producenothing!
+-Asdescribedunderthecraftsman,whenaplayerproducesagoodandthesupply
+forthatgoodisempty,theplayergetsnothing.
+The violet buildings
+Thereare17differentvioletbuildings:twoeachofthe12smallbuildings
+andoneeachofthe5largebuildings.The special functions of the violet buildings tend to allow players tobreak the normal game rules. So, for example, the owner of an occupied
+officemaysellakindofgoodstothetradinghousethatisalreadythere.
+Aplayerisnotrequiredtousethespecialfunctionofanoccupiedvioletbuildingifhedoesnotwantto (importantwiththewharf,seebelow) .
+Smallmarket
+Whentheownerofanoccupiedsmallmarketsellsagoodinthetraderphase,hegetsanextradoubloonfromthebankforit.
+Example:Annasellsacornandreceives1doubloon.
+Hacienda
+Onhisturninthesettlerphase,theownerofanoccupiedhaciendamay,before
+hetakesaface-upplantationtile,takean additionaltilefromthe
+face-down stack (the top-most) and place it on an empty space on hisisland.Hemaythentakehisnormalturninthephase.
+Note:ifaplayerchoosestotakeaface-downtile,hemustimmediatelyplaceiton
+anemptyspaceonhisisland.Hemaynotdiscardit.Iftheplayeralsoownsan
+occupiedconstructionhut,hemaynottakeaquarryinsteadoftheface-downtile.
+Thus,ifthesettlerownsahacienda,hemayonlytakeonequarry.
+Constructionhut
+In the settler phase, the owner of an occupied construction hut, can
+placeaquarryonhisisland insteadofoneoftheface-upplantationtiles.
+Note:ifthesettlerownsaconstructionhut,hemayonlytakeonequarry.
+Smallwarehouse
+Asdescribedunderthecaptain,playersmuststoretheirunloadedgoods
+at the end of the captain phase. If a player does not have sufficientstoragespace,hemustreturnthegoodstothegoodssupplies.Theownerofanoccupiedsmallwarehousemaystore,attheendofthe
+captainphase,in addition
+tothesinglegoodsbarrelheisallowedtostore
+onhiswindrose,allthebarrelsofonekindofgoodsthathechooses.The
+warehouseprotectstheplayerfromreturninggoodstothesupply.Itdoes
+not protect the player from being required to load the goods onto thecargoships.
+Note:thegoodschosenarenotactuallystoredonthesmallwarehousetile,buton
+theplayer’swindrose.
+Hospice
+Duringthesettlerphase,whentheownerofanoccupiedhospiceplacesaplantationorquarrytileonhisisland,hemaytakeacolonistfromthecolonistsupply
+andplaceiton thistile.
+Note:iftheplayeralsoownsanoccupiedhaciendaandchoosestotakethe
+additionalface-downorquarrytile,hedoesnot getacolonistfortheextratile.
+Iftherearenomorecolonistsinthecolonistsupply,hemaytakeonefromthe
+colonistship.Iftherearealsononethere,hegoeswithout.
+
+10Office
+Whentheownerofanoccupiedofficesellsagoodtothetradinghousein
+the trader phase, it need not be different than the goods already there. If
+thetradinghouseisfull,theplayercannotsellagoodthere!
+Example:thetradinghousealreadyhasabarreloftobacco.Bobownsanoccupied
+officeand,onhisturn,sellsatobaccotothetradinghouse.Chrisownstheother
+office.Onherturnitisoccupied,soshetoocansellatobaccotothetradinghouse.
+Largemarket
+When the owner of an occupied large market sells a good in the trader
+phase,hegetsanextra2doubloonsfromthebankforit.
+Note:ifaplayerownsbothasmallandlargemarket,hetakesanextra3doubloons
+whenhesellsagoodtothetradinghouse.
+Largewarehouse
+The owner of an occupied large warehouse may store, at the end of the
+captainphase,in additiontothesinglegoodsbarrelheisallowedtostore
+onhiswindrose,allthebarrelsof twokindsofgoodsthathechooses.
+Note:ifaplayerownsbothasmallandlargewarehouse,hemaystoreallthebarrels
+of3kindsofgoodsthathechooses.
+Factory
+Iftheownerofanoccupiedfactoryproducesgoodsofmorethanone kind
+in the craftsman phase, he earns money from the bank: for two kindsof
+goods,heearns1doubloon,forthree kindsofgoods,heearns2doubloons,
+forfourkindsofgoods,heearns3doubloons,andforallfive kindsofgoods,
+heearns5doubloons.Thenumberofbarrelsproducedplaysnorole.
+Example:Davidownsanoccupiedfactory,3occupiedcornplantations,3occupied
+sugarplantations,1occupiedtobaccoplantation,andtheassociatedproduction
+buildingswiththenecessarynumberofcolonists.Heproducesonly2sugarbarrels
+and1tobaccobarrelasthereisnocornandonly2sugarbarrelsinthesupply.Heearns1doubloonfromthebankforproducing2kindsofgoods.
+University
+Duringthebuilderphase,whentheownerofanoccupieduniversitybuilds
+abuildinginhiscity,hemaytakeacolonistfromthe colonistsupply and
+placeitonthistile.
+Note:ifhebuildsaproductionbuildingwithmorethanonecircle,hegetsonlyone
+colonist.Iftherearenomorecolonistsinthecolonistsupply,hemaytakeonefrom
+thecolonistship.Iftherearealsononethere,hegoeswithout.
+Harbor
+Eachtime,duringthecaptainphase,theownerofanoccupiedharborloads
+goodsonacargoship,heearns oneextravictorypoint.
+Example:theownerofanoccupiedharbor(andanoccupiedwharf)canonlyload3
+ofhis5tobaccoonthe“tobaccoship”asthose3fillitup:heearns3+1VP.Inhis
+nextloadingturn,heloadsbothhis2sugaronthe“sugarship”:heearns2+1VP.In
+hisnextloadingturn,heuseshiswharftoputhisremaining2tobaccointhesupply:
+heearns2+1VP.Thus,inthiscaptainphasehehasearnedanadditional3VPwiththeuseofhisharbor(and2VPextrawithhiswharf).
+Wharf
+Duringthecaptainphase,whenaplayerwithanoccupiedwharfmustload
+goods,insteadofloadingthemonacargoship,hemayplace allgoodsof
+onekind in the goods supply and score the appropriate victory points as
+thoughhehadloadedthemonacargoship. Itisasthoughtheplayerhas
+animaginaryshipwithunlimitedcapacityathisdisposal.
+
+11
+Example:intheexamplewiththeharbor
+above,let’sassumetheplayerusedhiswharf
+shiptoplaceall5tobaccobarrelsinthesupply.Inthiscase,the“tobaccoship”would
+likelynotbefullattheendofthecaptain
+phase,and,therefore,notemptiedasitwas
+intheaboveexample.Theplayermustloadgoodsonacargoshipwheneverhecanonhisturn
+during the captain phase, except when he chooses to use his wharf and
+“load”themonhisimaginaryship.The wharf can only be used once
+per captain phase by its owner, but he
+maychoosewhentouseit,ifatall.Thisimaginaryshipcantakeanyone
+good,butitmaybeofakindononeofthethreecargoshipsortheother
+imaginarywharfship.
+Note:whenaplayeruseshiswharf,hemustloadall thegoodsbarrelsofthekind
+hechoosesthathehas.Heisnotrequired,however,tochoosethegoodhehasthe
+mostof.
+Animaginarywharfshiphasthecapacityfor11barrels.
+The large buildings
+The following five large buildings occur just once each in the game. Eachneedstwoadjacentcityspacestobebuilt,butitcountsasonebuilding.
+Note:when, in these rules, “large building”is mentioned, it is the following five
+buildingsthataredescribed!
+Guildhall
+Theownerofthe occupiedguildhallearns,atgameend,anadditional1VP
+foreachsmallproductionbuilding(occupiedorunoccupied)inhiscity(=
+smallindigoplantandsmallsugarmill),andanadditional2VPforeachlargeproductionbuilding(occupiedorunoccupied)inhiscity(=indigo
+plant,sugarmill,tobaccostorage,andcoffeeroaster).
+Example:atgameend,theowneroftheoccupiedguildhallalsohasasmalland
+largesugarmill,asmallindigoplant,andacoffeeroasterinhiscity:heearnsan
+additional6VP.
+Residence
+Theownerofthe occupiedresidenceearns,atgameend,additionalvictory
+pointsfortheplantationsandquarrieshehasplacedonhisisland.Foruptoninefilledislandspaces,heearns4VP,fortenfilledislandspaces,heearns5VP,forelevenfilledislandspaces,heearns6VP,andforalltwelve
+spacesfilled,heearns7VP.
+Example:atgameend,theowneroftheoccupiedresidencehasfilled10ofhis12
+islandspaceswithplantationsandquarries:heearnsanadditional5VP.
+Fortress
+The owner of the occupiedfortress earns, at game end, one additional
+victorypointforeverythreecolonistsonhisplayerboard.
+Example:atgameend,theowneroftheoccupiedfortresshasatotalof20colonists
+onhisplantations,quarries,buildings,andinSanJuan:heearnsanadditional6VP.
+Customshouse
+The owner of the occupiedcustoms house earns, at game end, one
+additional victory point for every four victory points he acquired duringthegame.Theplayershouldcountonlyhisvictorypointchips(andany
+extravictorypointsrecordedonpaperafterthechipsupplywasexhausted,but before game end). He does not use victory points earned for his
+buildingsatgameend.
+Example:atgameend,theowneroftheoccupiedcustomshousehasaccumulated23
+victorypointsinVPchips:heearnsanadditional5VP.
+Cityhall
+The owner of the occupiedcity hall earns, at game end, one additional
+victorypointforeach violetbuilding(occupiedorunoccupied)inhiscity
+(cityhallcounts!).
+Example:atgameend,theowneroftheoccupiedcityhallalsohas:hacienda,harbor,
+office,constructionhut,largewarehouse,andresidence:heearnsanadditional7VP.
+
+Ifyouhavecomments,questions,orsuggestions,pleasewriteusat:
+Rio Grande Games, PO Box 45715, Rio Rancho, NM 87174, USA
+E-Mail: RioGames@aol.com
+©2001AndreasSeyfarth
+©2002RavensburgerSpieleverlagThe author and publisher wish to thank the many playtesters fortheir help and suggestion, especially:
+BeateBachl,SibylleBergmann,Christine&PeterDürdoth,WalburgaFreudenstein,HolgerFrieberg,MarkusHuber,AndreasMaszuhn,
+MichaelMeier-Bachl,KarenSeyfarth,DominikWagner,theWiener
+SpieleAkademie,andthegaminggroupsfromBerlin,Bödefeld,GöttingenandRosenheim.
+222992please visit our website:
+www.riograndegames.com
+Werecommendthatplayerskeepthispageavailableduringthegamesotheyhaveeasyaccesstotheinformation
+onthebuildings.Thisisespeciallyusefultothoseplayerswhoareseatedsothatthegameboardisup-side-down
+fromthem.
