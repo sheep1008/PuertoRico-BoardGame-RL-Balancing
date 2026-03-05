@@ -116,13 +116,14 @@ class PuertoRicoEnv(gym.Env):
                 self.game.action_captain_load(player_idx, -1, g_type)
                 
             elif 64 <= action <= 68:
-                # Captain Store
+                # Captain Store Windrose
                 g_type = Good(action - 64)
-                # Store all of this good if we have a warehouse, else 1
-                store_amt = 1
-                if p.is_building_occupied(BuildingType.SMALL_WAREHOUSE) or p.is_building_occupied(BuildingType.LARGE_WAREHOUSE):
-                    store_amt = p.goods[g_type]
-                self.game.action_captain_store(player_idx, {g_type: store_amt})
+                self.game.action_captain_store_windrose(player_idx, g_type)
+
+            elif 106 <= action <= 110:
+                # Captain Store Warehouse
+                g_type = Good(action - 106)
+                self.game.action_captain_store_warehouse(player_idx, g_type)
                 
             elif 69 <= action <= 92:
                 # Mayor Toggle
@@ -174,7 +175,7 @@ class PuertoRicoEnv(gym.Env):
         elif self.game.current_phase == Phase.CAPTAIN:
             self.game.action_captain_pass(player_idx)
         elif self.game.current_phase == Phase.CAPTAIN_STORE:
-            self.game.action_captain_store(player_idx, {})
+            self.game.action_captain_store_pass(player_idx)
         elif self.game.current_phase == Phase.MAYOR:
             # During Mayor pass, we must solidify the board and call the engine pass
             p = self.game.players[player_idx]
@@ -385,10 +386,30 @@ class PuertoRicoEnv(gym.Env):
                 mask[15] = True
                 
         elif phase == Phase.CAPTAIN_STORE:
-            mask[15] = True # Can always store nothing
+            assign = game._storage_assignments[game.current_player_idx]
+            unstored_types = [g for g in Good if p.goods[g] > 0 and g != assign['windrose'] and g not in assign['warehouses']]
+            
+            max_wh_slots = 0
+            if p.is_building_occupied(BuildingType.SMALL_WAREHOUSE): max_wh_slots += 1
+            if p.is_building_occupied(BuildingType.LARGE_WAREHOUSE): max_wh_slots += 2
+            
+            has_empty_windrose = (assign['windrose'] is None)
+            has_empty_wh = len(assign['warehouses']) < max_wh_slots
+            
+            can_pass = True
+            if len(unstored_types) > 0:
+                if has_empty_windrose or has_empty_wh:
+                    can_pass = False
+                    
+            if can_pass:
+                mask[15] = True
+                
             for g in Good:
-                if p.goods[g] >= 1:
-                    mask[64 + g.value] = True
+                if p.goods[g] > 0:
+                    if has_empty_windrose and assign['windrose'] is None and g not in assign['warehouses']:
+                        mask[64 + g.value] = True
+                    if has_empty_wh and g != assign['windrose'] and g not in assign['warehouses']:
+                        mask[106 + g.value] = True
                     
         elif phase == Phase.MAYOR:
             # Toggle actions

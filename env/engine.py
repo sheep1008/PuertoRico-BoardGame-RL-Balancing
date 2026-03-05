@@ -66,6 +66,7 @@ class PuertoRicoGame:
         self._captain_privilege_used = False
         self._wharf_used = {i: False for i in range(num_players)}
         self._captain_passed_players = set()
+        self._storage_assignments = {i: {'windrose': None, 'warehouses': []} for i in range(self.num_players)}
         self._colonists_ship_underfilled = False # Evaluated at end of Mayor phase
         
         # For sequential tracking within a phase
@@ -309,6 +310,7 @@ class PuertoRicoGame:
                 self.current_phase = Phase.CAPTAIN_STORE
                 self.players_taken_action = 0
                 self.current_player_idx = self.active_role_player_idx()
+                self._storage_assignments = {i: {'windrose': None, 'warehouses': []} for i in range(self.num_players)}
             else:
                 self._next_player()
                 while self.current_player_idx in self._captain_passed_players:
@@ -665,65 +667,121 @@ class PuertoRicoGame:
         """
         if self.current_phase != Phase.CAPTAIN or self.current_player_idx != player_idx:
             raise ValueError("Not this player's turn in Captain phase.")
+            
+        p = self.players[player_idx]
+        
+        # Verify if player TRULY cannot load anything
+        can_load_anything = False
+        for ship_idx, ship in enumerate(self.cargo_ships):
+            if not ship.is_full:
+                for g in Good:
+                    if p.goods[g] > 0:
+                        allowed = False
+                        if ship.good_type is None:
+                            other_has_it = any(os.good_type == g for i, os in enumerate(self.cargo_ships) if i != ship_idx)
+                            if not other_has_it:
+                                allowed = True
+                        elif ship.good_type == g:
+                            allowed = True
+                            
+                        if allowed:
+                            can_load_anything = True
+                            break
+            if can_load_anything:
+                break
+                
+        # Check Wharf
+        if not can_load_anything:
+            if p.is_building_occupied(BuildingType.WHARF) and not self._wharf_used.get(player_idx, False):
+                if any(p.goods[g] > 0 for g in Good):
+                    can_load_anything = True
+                    
+        if can_load_anything:
+            raise ValueError("Rule Violation: Player MUST load if they have valid goods and ship capacity.")
+            
         self._captain_passed_players.add(player_idx)
         self._advance_phase_turn()
 
-    def action_captain_store(self, player_idx: int, store_goods: Dict[Good, int]):
+    def action_captain_store_windrose(self, player_idx: int, good_type: Good):
         """
-        At end of captain phase, players store 1 good, plus large/small warehouses.
-        Extra goods are discarded.
-        store_goods is dict of {Good: amount} they wish to keep.
+        Assign a single barrel of a good to the Windrose.
         """
         if self.current_phase != Phase.CAPTAIN_STORE or self.current_player_idx != player_idx:
             raise ValueError("Not this player's turn in Captain Store phase.")
             
         p = self.players[player_idx]
-        
-        # Verify they actually own what they want to store
-        for g, amt in store_goods.items():
-            if p.goods[g] < amt:
-                raise ValueError(f"Player trying to store {amt} {g.name} but only has {p.goods[g]}")
-                
-        # Validate storage limits
-        total_types = sum(1 for g, v in store_goods.items() if v > 0)
-        
-        allowed_types_full_store = 0
+        if p.goods[good_type] == 0:
+            raise ValueError(f"Player does not have {good_type.name}.")
+            
+        if self._storage_assignments[player_idx]['windrose'] is not None:
+            raise ValueError("Windrose slot is already occupied.")
+            
+        if good_type in self._storage_assignments[player_idx]['warehouses']:
+            raise ValueError("Good is already assigned to a warehouse.")
+            
+        self._storage_assignments[player_idx]['windrose'] = good_type
+
+    def action_captain_store_warehouse(self, player_idx: int, good_type: Good):
+        """
+        Assign all barrels of a good to a Warehouse.
+        """
+        if self.current_phase != Phase.CAPTAIN_STORE or self.current_player_idx != player_idx:
+            raise ValueError("Not this player's turn in Captain Store phase.")
+            
+        p = self.players[player_idx]
+        if p.goods[good_type] == 0:
+            raise ValueError(f"Player does not have {good_type.name}.")
+            
+        max_wh_slots = 0
         if p.is_building_occupied(BuildingType.SMALL_WAREHOUSE):
-            allowed_types_full_store += 1
+            max_wh_slots += 1
         if p.is_building_occupied(BuildingType.LARGE_WAREHOUSE):
-            allowed_types_full_store += 2
+            max_wh_slots += 2
             
-        # Is this configuration legal?
-        # A legal config has at most 'allowed_types_full_store' types where amount > 1
-        # AND at most 1 additional single barrel of any type NOT covered by warehouses
+        if len(self._storage_assignments[player_idx]['warehouses']) >= max_wh_slots:
+            raise ValueError("All warehouse slots are already used.")
+            
+        if good_type in self._storage_assignments[player_idx]['warehouses']:
+            raise ValueError("Good is already assigned to a warehouse.")
+            
+        if self._storage_assignments[player_idx]['windrose'] == good_type:
+            raise ValueError("Good is already assigned to the windrose.")
+            
+        self._storage_assignments[player_idx]['warehouses'].append(good_type)
+
+    def action_captain_store_pass(self, player_idx: int):
+        """
+        Finalize storage. Discard unstored goods.
+        Must not voluntarily discard if space is available.
+        """
+        if self.current_phase != Phase.CAPTAIN_STORE or self.current_player_idx != player_idx:
+            raise ValueError("Not this player's turn in Captain Store phase.")
+            
+        p = self.players[player_idx]
+        assign = self._storage_assignments[player_idx]
         
-        types_needing_warehouse = 0
-        single_barrel_used = False
-        is_valid = True
+        unstored_types = [g for g in Good if p.goods[g] > 0 and g != assign['windrose'] and g not in assign['warehouses']]
         
-        for g, amt in store_goods.items():
-            if amt > 1:
-                types_needing_warehouse += 1
-            elif amt == 1:
-                # Can either use a warehouse or the 1 free windrose spot
-                pass
+        max_wh_slots = 0
+        if p.is_building_occupied(BuildingType.SMALL_WAREHOUSE): max_wh_slots += 1
+        if p.is_building_occupied(BuildingType.LARGE_WAREHOUSE): max_wh_slots += 2
+        
+        has_empty_windrose = (assign['windrose'] is None)
+        has_empty_wh = len(assign['warehouses']) < max_wh_slots
+        
+        if len(unstored_types) > 0:
+            if has_empty_windrose or has_empty_wh:
+                raise ValueError("Rule Violation: Cannot voluntarily discard goods if you have empty storage space.")
                 
-        # To strictly check: sort amounts descending
-        amounts = sorted([v for v in store_goods.values() if v > 0], reverse=True)
-        # First `allowed_types_full_store` items are covered by warehouses regardless of size
-        remaining_amounts = amounts[allowed_types_full_store:]
-        # What's left can be AT MOST one item, and its value must be EXACTLY 1
-        if len(remaining_amounts) > 1:
-            is_valid = False
-        elif len(remaining_amounts) == 1 and remaining_amounts[0] > 1:
-            is_valid = False
-            
-        if not is_valid:
-            raise ValueError("Invalid storage configuration.")
-            
-        # Execute storage (discard the rest)
+        # Apply storage
         for g in Good:
-            keep = store_goods.get(g, 0)
+            if g in assign['warehouses']:
+                keep = p.goods[g]
+            elif g == assign['windrose']:
+                keep = 1
+            else:
+                keep = 0
+                
             discard = p.goods[g] - keep
             if discard > 0:
                 p.remove_good(g, discard)
