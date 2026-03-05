@@ -62,6 +62,12 @@ class PuertoRicoGame:
         self.active_role: Optional[Role] = None
         self.active_role_player: int = -1
         
+        # Phase-specific tracking flags
+        self._captain_privilege_used = False
+        self._wharf_used = {i: False for i in range(num_players)}
+        self._captain_passed_players = set()
+        self._colonists_ship_underfilled = False # Evaluated at end of Mayor phase
+        
         # For sequential tracking within a phase
         self._phase_turn_offset = 0  # 0 to num_players-1, denotes who goes next in the action circle
         self.players_taken_action = 0
@@ -178,7 +184,7 @@ class PuertoRicoGame:
 
     def check_game_end(self) -> bool:
         """Returns True if any game ending condition is met at the end of the round."""
-        if self.colonists_supply <= 0:
+        if self._colonists_ship_underfilled:
             return True
         if self.vp_chips <= 0:
             return True
@@ -273,6 +279,12 @@ class PuertoRicoGame:
             if self.colonists_supply > 0:
                 p.unplaced_colonists += 1
                 self.colonists_supply -= 1
+            # Distribute colonists on ship immediately
+            idx = player_idx
+            while self.colonists_ship > 0:
+                self.players[idx].unplaced_colonists += 1
+                self.colonists_ship -= 1
+                idx = (idx + 1) % self.num_players
         elif role == Role.BUILDER:
             self.current_phase = Phase.BUILDER
         elif role == Role.CRAFTSMAN:
@@ -281,6 +293,8 @@ class PuertoRicoGame:
             self.current_phase = Phase.TRADER
         elif role == Role.CAPTAIN:
             self.current_phase = Phase.CAPTAIN
+            self._captain_passed_players = set()
+            self._wharf_used = {i: False for i in range(self.num_players)}
         elif role in (Role.PROSPECTOR_1, Role.PROSPECTOR_2):
             self.current_phase = Phase.PROSPECTOR
             # Privilege: 1 doubloon
@@ -290,13 +304,23 @@ class PuertoRicoGame:
             
     def _advance_phase_turn(self):
         """Advances turn to next player in the current phase."""
-        self.players_taken_action += 1
-        if self.players_taken_action >= self.num_players:
-            # Phase is over
-            self._execute_phase_cleanup()
-            self._end_phase()
+        if self.current_phase == Phase.CAPTAIN:
+            if len(self._captain_passed_players) >= self.num_players:
+                self.current_phase = Phase.CAPTAIN_STORE
+                self.players_taken_action = 0
+                self.current_player_idx = self.active_role_player_idx()
+            else:
+                self._next_player()
+                while self.current_player_idx in self._captain_passed_players:
+                    self._next_player()
         else:
-            self._next_player()
+            self.players_taken_action += 1
+            if self.players_taken_action >= self.num_players:
+                # Phase is over
+                self._execute_phase_cleanup()
+                self._end_phase()
+            else:
+                self._next_player()
 
     def _execute_phase_cleanup(self):
         """Phase specific cleanup before ending the phase."""
@@ -443,6 +467,9 @@ class PuertoRicoGame:
         p = self.players[player_idx]
         has_privilege = (player_idx == self.active_role_player_idx())
         
+        if p.empty_island_spaces <= 0 and tile_choice != -2:
+            raise ValueError("Player has filled all island spaces and must pass.")
+            
         if use_hacienda:
             if p.is_building_occupied(BuildingType.HACIENDA):
                 if self.plantation_stack:
@@ -505,7 +532,7 @@ class PuertoRicoGame:
             
         for i, val in enumerate(city_assignment):
             b_type = p.city_board[i].building_type
-            max_cap = BUILDING_DATA[b_type][3]
+            max_cap = BUILDING_DATA[b_type][2]
             if val < 0 or val > max_cap:
                 raise ValueError(f"Invalid colonist count for building {b_type.name}")
             p.city_board[i].colonists = val
@@ -611,6 +638,11 @@ class PuertoRicoGame:
             points_earned += 1
             self._captain_privilege_used = True
             
+        if is_wharf:
+            if self._wharf_used.get(player_idx, False):
+                raise ValueError("Wharf can only be used once per Captain phase.")
+            self._wharf_used[player_idx] = True
+            
         if p.is_building_occupied(BuildingType.HARBOR):
             points_earned += 1
             
@@ -627,14 +659,23 @@ class PuertoRicoGame:
         # the env raises an error or penalizes them.
         self._advance_phase_turn()
 
+    def action_captain_pass(self, player_idx: int):
+        """
+        Player indicates they can no longer load any goods.
+        """
+        if self.current_phase != Phase.CAPTAIN or self.current_player_idx != player_idx:
+            raise ValueError("Not this player's turn in Captain phase.")
+        self._captain_passed_players.add(player_idx)
+        self._advance_phase_turn()
+
     def action_captain_store(self, player_idx: int, store_goods: Dict[Good, int]):
         """
         At end of captain phase, players store 1 good, plus large/small warehouses.
         Extra goods are discarded.
         store_goods is dict of {Good: amount} they wish to keep.
         """
-        if self.current_phase != Phase.CAPTAIN or self.current_player_idx != player_idx:
-            raise ValueError("Not this player's turn in Captain phase.")
+        if self.current_phase != Phase.CAPTAIN_STORE or self.current_player_idx != player_idx:
+            raise ValueError("Not this player's turn in Captain Store phase.")
             
         p = self.players[player_idx]
         
@@ -698,27 +739,26 @@ class PuertoRicoGame:
             self._deal_face_up_plantations()
             
         elif self.current_phase == Phase.MAYOR:
-            idx = self.active_role_player_idx()
-            while self.colonists_ship > 0:
-                self.players[idx].unplaced_colonists += 1
-                self.colonists_ship -= 1
-                idx = (idx + 1) % self.num_players
-                
             capacity = 0
             for p in self.players:
                 for b in p.city_board:
-                    capacity += BUILDING_DATA[b.building_type][3] - b.colonists
+                    capacity += BUILDING_DATA[b.building_type][2] - b.colonists
                     
             refill = max(capacity, self.num_players)
+            if refill > self.colonists_supply:
+                self._colonists_ship_underfilled = True
+                
             actual_refill = min(refill, self.colonists_supply)
             self.colonists_ship = actual_refill
             self.colonists_supply -= actual_refill
             
         elif self.current_phase == Phase.TRADER:
             if len(self.trading_house) == 4:
+                for good in self.trading_house:
+                    self.goods_supply[good] += 1
                 self.trading_house.clear()
                 
-        elif self.current_phase == Phase.CAPTAIN:
+        elif self.current_phase == Phase.CAPTAIN_STORE:
             # Empty full ships
             for ship in self.cargo_ships:
                 if ship.is_full:

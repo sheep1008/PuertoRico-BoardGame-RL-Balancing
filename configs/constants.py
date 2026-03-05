@@ -7,8 +7,9 @@ class Phase(IntEnum):
     CRAFTSMAN = 3
     TRADER = 4
     CAPTAIN = 5
-    PROSPECTOR = 6
-    END_ROUND = 7
+    CAPTAIN_STORE = 6
+    PROSPECTOR = 7
+    END_ROUND = 8
 
 class Role(IntEnum):
     SETTLER = 0
