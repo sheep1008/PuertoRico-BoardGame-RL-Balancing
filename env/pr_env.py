@@ -48,7 +48,7 @@ class PuertoRicoEnv(gym.Env):
                 "trading_house": spaces.MultiDiscrete([6, 6, 6, 6]), # 0-4 for good, 5 for empty
                 "role_doubloons": spaces.MultiDiscrete([20] * 8), # Doubloons per role
                 "roles_available": spaces.MultiBinary(8), # 1 if available, 0 if taken
-                "face_up_plantations": spaces.MultiDiscrete([7] * 6), # 0-5 tile types, 6 for empty slot
+                "face_up_plantations": spaces.MultiDiscrete([7] * (self.num_players + 1)), # 0-5 tile types, 6 for empty slot
                 "quarry_stack": spaces.Discrete(9),
                 "current_player": spaces.Discrete(self.num_players),
                 "current_phase": spaces.Discrete(10)
@@ -215,7 +215,8 @@ class PuertoRicoEnv(gym.Env):
             roles_available.append(available)
             
         face_up_plantations = [t for t in game.face_up_plantations]
-        face_up_plantations += [6] * (6 - len(face_up_plantations))
+        max_face_up = self.num_players + 1
+        face_up_plantations += [6] * (max_face_up - len(face_up_plantations))
         
         global_state = {
             "vp_chips": game.vp_chips,
@@ -305,13 +306,13 @@ class PuertoRicoEnv(gym.Env):
             for i in range(len(game.face_up_plantations)):
                 if p.empty_island_spaces > 0:
                     mask[8 + i] = True
-                    if can_hacienda:
+                    if can_hacienda and p.empty_island_spaces > 1:
                         mask[98 + i] = True
             
             can_quarry = (game.current_player_idx == game.active_role_player_idx()) or p.is_building_occupied(BuildingType.CONSTRUCTION_HUT)
             if can_quarry and game.quarry_stack > 0 and p.empty_island_spaces > 0:
                 mask[14] = True
-                if can_hacienda:
+                if can_hacienda and p.empty_island_spaces > 1:
                     mask[104] = True
                     
             if can_hacienda:
@@ -321,13 +322,25 @@ class PuertoRicoEnv(gym.Env):
             mask[15] = True # Pass
             has_privilege = (game.current_player_idx == game.active_role_player_idx())
             active_quarries = sum(1 for t in p.island_board if t.tile_type == TileType.QUARRY and t.is_occupied)
-            max_discount = active_quarries
-            if has_privilege:
-                max_discount += 1
                 
             for b_type, count in game.building_supply.items():
                 if count > 0 and not p.has_building(b_type):
-                    if p.doubloons + max_discount >= BUILDING_DATA[b_type][0]: 
+                    base_cost = BUILDING_DATA[b_type][0]
+                    # Column-based maximum quarry discount
+                    if base_cost <= 3:
+                        max_q = 1
+                    elif base_cost <= 6:
+                        max_q = 2
+                    elif base_cost <= 9:
+                        max_q = 3
+                    else:
+                        max_q = 4
+                        
+                    quarry_discount = min(active_quarries, max_q)
+                    privilege_discount = 1 if has_privilege else 0
+                    final_cost = max(0, base_cost - quarry_discount - privilege_discount)
+                    
+                    if p.doubloons >= final_cost: 
                         mask[16 + b_type.value] = True
                         
         elif phase == Phase.TRADER:
