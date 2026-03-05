@@ -186,6 +186,10 @@ class PuertoRicoGame:
 
     def check_game_end(self) -> bool:
         """Returns True if any game ending condition is met at the end of the round."""
+        # A round is fully over when roles_in_play has been cleared by _end_round.
+        if self.current_phase != Phase.END_ROUND or len(self.roles_in_play) > 0:
+            return False
+            
         if self._colonists_ship_underfilled:
             return True
         if self.vp_chips <= 0:
@@ -326,40 +330,7 @@ class PuertoRicoGame:
             else:
                 self._next_player()
 
-    def _execute_phase_cleanup(self):
-        """Phase specific cleanup before ending the phase."""
-        if self.current_phase == Phase.SETTLER:
-            # Discard remaining face up tiles and deal new ones
-            self.plantation_discard.extend(self.face_up_plantations)
-            self.face_up_plantations.clear()
-            self._deal_face_up_plantations()
-            
-        elif self.current_phase == Phase.MAYOR:
-            # Distribute colonists on ship
-            # This is complex in engine logic but basically:
-            # deal them out one by one starting from Mayor
-            idx = self.active_role_player_idx()
-            while self.colonists_ship > 0:
-                self.players[idx].unplaced_colonists += 1
-                self.colonists_ship -= 1
-                idx = (idx + 1) % self.num_players
-                
-            # Then Mayor fills the ship
-            empty_spots = sum(p.empty_city_spaces for p in self.players) # Wait, it's empty circles on BUILDINGS on player boards!
-            # Let's count properly: Total capacities of all buildings - current colonists in them
-            capacity = 0
-            for p in self.players:
-                for b in p.city_board:
-                    capacity += BUILDING_DATA[b.building_type][3] - b.colonists
-                    
-            refill = max(capacity, self.num_players)
-            actual_refill = min(refill, self.colonists_supply)
-            self.colonists_ship = actual_refill
-            self.colonists_supply -= actual_refill
-            
-        elif self.current_phase == Phase.TRADER:
-            if len(self.trading_house) == 4:
-                self.trading_house.clear()
+
 
     def active_role_player_idx(self) -> int:
         """Returns the idx of the player who picked the current active role."""
@@ -494,7 +465,7 @@ class PuertoRicoGame:
         if p.empty_island_spaces <= 0 and tile_choice != -2:
             raise ValueError("Player has filled all island spaces and must pass.")
             
-        placed_tile_idx = -1 # Keep track of where we place the chosen tile for Hospice
+        tile_placed = False
         
         if tile_choice == -2: # Pass
             pass
@@ -505,20 +476,20 @@ class PuertoRicoGame:
             if self.quarry_stack > 0 and p.empty_island_spaces > 0:
                 p.place_plantation(TileType.QUARRY)
                 self.quarry_stack -= 1
-                placed_tile_idx = -1 # newly placed tile is always appended to the end
+                tile_placed = True
         else: # Face up plantation
             if 0 <= tile_choice < len(self.face_up_plantations):
                 tile = self.face_up_plantations.pop(tile_choice)
                 if p.empty_island_spaces > 0:
                     p.place_plantation(tile)
-                    placed_tile_idx = -1
+                    tile_placed = True
             else:
                 raise ValueError("Invalid plantation choice.")
                 
         # Hospice check ONLY applies to the officially drafted tile
-        if placed_tile_idx != -1 and p.is_building_occupied(BuildingType.HOSPICE):
+        if tile_placed and p.is_building_occupied(BuildingType.HOSPICE):
             if self.colonists_supply > 0:
-                p.island_board[placed_tile_idx].is_occupied = True
+                p.island_board[-1].is_occupied = True
                 self.colonists_supply -= 1
                 
         self._advance_phase_turn()
@@ -664,11 +635,12 @@ class PuertoRicoGame:
         if p.is_building_occupied(BuildingType.HARBOR):
             points_earned += 1
             
-        actual_points = min(points_earned, self.vp_chips)
-        self.vp_chips = max(0, self.vp_chips - points_earned) # Negative indicates triggered game end
-        p.add_vp(actual_points)
+        self.vp_chips -= points_earned # May go negative, which indicates triggered game end
+        p.add_vp(points_earned) # Players earn VP even if VP chips are exhausted
         
         p.remove_good(good_type, loaded_amount)
+        if is_wharf:
+            self.goods_supply[good_type] += loaded_amount # Wharf goods return to supply immediately
         
         # In actual Puerto Rico, a player MUST load if they can.
         # So instead of immediately advancing, the player's turn continues until they can't load.
