@@ -491,6 +491,9 @@ class PuertoRicoGame:
             if self.colonists_supply > 0:
                 p.island_board[-1].is_occupied = True
                 self.colonists_supply -= 1
+            elif self.colonists_ship > 0:
+                p.island_board[-1].is_occupied = True
+                self.colonists_ship -= 1
                 
         self._advance_phase_turn()
 
@@ -578,6 +581,9 @@ class PuertoRicoGame:
                 if self.colonists_supply > 0:
                     p.city_board[-1].colonists += 1
                     self.colonists_supply -= 1
+                elif self.colonists_ship > 0:
+                    p.city_board[-1].colonists += 1
+                    self.colonists_ship -= 1
                     
         self._advance_phase_turn()
 

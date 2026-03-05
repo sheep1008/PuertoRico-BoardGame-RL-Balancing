@@ -349,14 +349,17 @@ class PuertoRicoEnv(gym.Env):
         elif phase == Phase.CAPTAIN:
             # Need to find valid ship/good combos
             can_load_anything = False
+            
+            # For each good, find the maximum loadable amount across all valid ships
+            max_loadable_for_good = {g: 0 for g in Good}
+            allowed_ships_for_good = {g: [] for g in Good}
+            
             for ship_idx, ship in enumerate(game.cargo_ships):
                 if not ship.is_full:
                     for g in Good:
                         if p.goods[g] > 0:
-                            # Is good allowed on this ship?
                             allowed = False
                             if ship.good_type is None:
-                                # Check if no OTHER ship has this good
                                 other_has_it = any(os.good_type == g for i, os in enumerate(game.cargo_ships) if i != ship_idx)
                                 if not other_has_it:
                                     allowed = True
@@ -364,8 +367,16 @@ class PuertoRicoEnv(gym.Env):
                                 allowed = True
                                 
                             if allowed:
-                                mask[44 + (ship_idx * 5) + g.value] = True
-                                can_load_anything = True
+                                potential_load = min(p.goods[g], ship.capacity - ship.current_load)
+                                allowed_ships_for_good[g].append((ship_idx, potential_load))
+                                max_loadable_for_good[g] = max(max_loadable_for_good[g], potential_load)
+                                
+            for g, ships in allowed_ships_for_good.items():
+                max_load = max_loadable_for_good[g]
+                for ship_idx, potential_load in ships:
+                    if potential_load == max_load:
+                        mask[44 + (ship_idx * 5) + g.value] = True
+                        can_load_anything = True
                                 
             # Wharf
             if p.is_building_occupied(BuildingType.WHARF) and not game._wharf_used.get(game.current_player_idx, False):
