@@ -97,7 +97,7 @@ CARGO_SHIPS_SETUP = {
     5: [6, 7, 8]
 }
 
-# (Type, Cost, VP, Capacity, Max Count, is_large, Good produced (if any))
+# (Cost, VP, Capacity, Max Count, is_large, Good produced)
 BUILDING_DATA = {
     BuildingType.SMALL_INDIGO_PLANT: (1, 1, 1, 4, False, Good.INDIGO),
     BuildingType.SMALL_SUGAR_MILL: (2, 1, 1, 4, False, Good.SUGAR),
