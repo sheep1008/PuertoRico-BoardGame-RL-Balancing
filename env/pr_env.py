@@ -160,7 +160,13 @@ class PuertoRicoEnv(gym.Env):
             return self._get_obs(), -50.0, True, False, {"error": str(e)}
 
         done = self.game.check_game_end()
-        reward = self._calculate_reward() if done else 0.0
+        
+        if done:
+            all_rewards = self._calculate_all_rewards()
+            reward = all_rewards[player_idx] # The agent who took this final action
+            self._final_rewards = all_rewards # For info dict
+        else:
+            reward = 0.0
 
         return self._get_obs(), reward, done, False, self._get_info()
 
@@ -275,21 +281,39 @@ class PuertoRicoEnv(gym.Env):
 
     def _get_info(self):
         info = {"current_phase": self.game.current_phase.name if self.game.current_phase else "INIT"}
-        if self.game.check_game_end():
+        if getattr(self, 'game', None) and self.game.check_game_end():
             info["final_scores"] = self.game.get_scores()
+            if hasattr(self, '_final_rewards'):
+                info["player_rewards"] = self._final_rewards
         return info
 
-    def _calculate_reward(self):
+    def _calculate_all_rewards(self) -> list[float]:
         """
-        Calculates reward at the end of the game based on final scores.
-        Winner gets +1, others get 0 or negative relative depending on score difference.
-        Currently returns the raw score + tie_breaker (scaled down to act as a decimal).
+        Calculates competitive rewards at the end of the game for all players.
+        Absolute score encourages game stalling to farm points. To teach the agent
+        strategic pacing (e.g., rushing game end when ahead), the reward must be competitive.
+        
+        Using: (1) Win/Loss large sparse reward (±1.0)
+               (2) Small dense shaping based on score margin against the best opponent (* 0.01)
         """
         scores = self.game.get_scores()
+        totals = [vp + tb * 0.0001 for vp, tb in scores]
         
-        # Determine ranks if needed, but for raw reward:
-        vp, tb = scores[self.game.current_player_idx]
-        return float(vp) + float(tb) * 0.0001
+        rewards = []
+        for i in range(self.num_players):
+            my_total = totals[i]
+            max_opp_total = max(totals[j] for j in range(self.num_players) if j != i)
+            
+            # 1. Win/Loss (Zero-sum fundamental)
+            is_winner = my_total > max_opp_total
+            win_reward = 1.0 if is_winner else -1.0
+            
+            # 2. Score Margin Shaping
+            margin = (my_total - max_opp_total) * 0.01
+            
+            rewards.append(win_reward + margin)
+            
+        return rewards
 
     def valid_action_mask(self):
         mask = np.zeros(200, dtype=bool)
