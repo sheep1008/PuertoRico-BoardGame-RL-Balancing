@@ -1,5 +1,5 @@
 import random
-from typing import List, Dict, Optional
+from typing import List, Dict, Optional, Tuple
 
 from configs.constants import (
     Phase, Role, Good, TileType, BuildingType,
@@ -152,13 +152,8 @@ class PuertoRicoGame:
         """Called when all players have acted in a phase."""
         self.active_role = None
         
-        # Who is next to choose a role?
         # Roles are chosen in clockwise order starting from governor
         if len(self.roles_in_play) < self.num_players:
-            # Not everyone has chosen a role yet this round
-            # Next player to choose is the one left of whoever chose last
-            # Actually, turn offset doesn't help here. We need to find the next player
-            # who hasn't chosen a role yet. Since it's clockwise:
             first_chooser = self.governor_idx
             next_chooser_offset = len(self.roles_in_play)
             next_player = (first_chooser + next_chooser_offset) % self.num_players
@@ -199,8 +194,8 @@ class PuertoRicoGame:
                 return True
         return False
 
-    def get_scores(self) -> List[int]:
-        """Calculates final scores for all players."""
+    def get_scores(self) -> List[Tuple[int, int]]:
+        """Calculates final scores for all players. Returns List of (VP, TieBreaker)."""
         scores = []
         for p in self.players:
             score = p.vp_chips
@@ -251,7 +246,8 @@ class PuertoRicoGame:
                         violet_count = sum(1 for v_b in p.city_board if BUILDING_DATA[v_b.building_type][5] is None)
                         score += violet_count
                         
-            scores.append(score)
+            tie_breaker = p.doubloons + sum(p.goods.values())
+            scores.append((score, tie_breaker))
         return scores
 
     def select_role(self, player_idx: int, role: Role):
@@ -295,6 +291,14 @@ class PuertoRicoGame:
             self.current_phase = Phase.BUILDER
         elif role == Role.CRAFTSMAN:
             self.current_phase = Phase.CRAFTSMAN
+            self._execute_craftsman_production()
+            
+            can_privilege = any(self.goods_supply[g] > 0 for g in getattr(self, '_craftsman_produced_kinds', []))
+            
+            if can_privilege:
+                self.current_player_idx = self.active_role_player_idx()
+            else:
+                self._end_phase()
         elif role == Role.TRADER:
             self.current_phase = Phase.TRADER
         elif role == Role.CAPTAIN:
@@ -322,6 +326,8 @@ class PuertoRicoGame:
                     self._next_player()
         else:
             self.players_taken_action += 1
+            # 중복 사용 방지 : 한 플레이어가 자신의 한 차례에 하시엔다를 두 번 쓰는 것을 막음
+            # 다음 플레이어 배려 : 다음 플레이어도 하시엔다를 가지고 있다면 그 플레이어가 정상적으로 자신의 하시엔다 능력을 사용
             self._hacienda_used = False
             if self.players_taken_action >= self.num_players:
                 # Phase is over
@@ -330,16 +336,60 @@ class PuertoRicoGame:
             else:
                 self._next_player()
 
-
-
     def active_role_player_idx(self) -> int:
         """Returns the idx of the player who picked the current active role."""
         return self.active_role_player
 
+    def _execute_craftsman_production(self):
+        """Auto-produce goods for all players strictly in order starting from active_role_player."""
+        self._craftsman_produced_kinds = [] # To track what the Craftsman actually produced
+        
+        start_idx = self.active_role_player_idx()
+        for i in range(self.num_players):
+            idx = (start_idx + i) % self.num_players
+            p = self.players[idx]
+            
+            production = {g: 0 for g in Good}
+            corn_plantations = sum(1 for t in p.island_board if t.tile_type == TileType.CORN_PLANTATION and t.is_occupied)
+            production[Good.CORN] = corn_plantations
+            
+            raw_indigo = sum(1 for t in p.island_board if t.tile_type == TileType.INDIGO_PLANTATION and t.is_occupied)
+            raw_sugar = sum(1 for t in p.island_board if t.tile_type == TileType.SUGAR_PLANTATION and t.is_occupied)
+            raw_tobacco = sum(1 for t in p.island_board if t.tile_type == TileType.TOBACCO_PLANTATION and t.is_occupied)
+            raw_coffee = sum(1 for t in p.island_board if t.tile_type == TileType.COFFEE_PLANTATION and t.is_occupied)
+            
+            cap_indigo = sum(b.colonists for b in p.city_board if b.building_type in (BuildingType.SMALL_INDIGO_PLANT, BuildingType.INDIGO_PLANT))
+            cap_sugar = sum(b.colonists for b in p.city_board if b.building_type in (BuildingType.SMALL_SUGAR_MILL, BuildingType.SUGAR_MILL))
+            cap_tobacco = sum(b.colonists for b in p.city_board if b.building_type == BuildingType.TOBACCO_STORAGE)
+            cap_coffee = sum(b.colonists for b in p.city_board if b.building_type == BuildingType.COFFEE_ROASTER)
+            
+            production[Good.INDIGO] = min(raw_indigo, cap_indigo)
+            production[Good.SUGAR] = min(raw_sugar, cap_sugar)
+            production[Good.TOBACCO] = min(raw_tobacco, cap_tobacco)
+            production[Good.COFFEE] = min(raw_coffee, cap_coffee)
+            
+            kinds_produced = []
+            for g in Good:
+                amount = min(production[g], self.goods_supply[g])
+                if amount > 0:
+                    p.add_good(g, amount)
+                    self.goods_supply[g] -= amount
+                    kinds_produced.append(g)
+                    
+            if p.is_building_occupied(BuildingType.FACTORY):
+                kp = len(kinds_produced)
+                if kp == 2: p.add_doubloons(1)
+                elif kp == 3: p.add_doubloons(2)
+                elif kp == 4: p.add_doubloons(3)
+                elif kp == 5: p.add_doubloons(5)
+                
+            if idx == start_idx:
+                self._craftsman_produced_kinds = kinds_produced
+
     def action_craftsman(self, player_idx: int, privilege_good: Optional[Good] = None):
         """
-        Auto produces goods. If privilege holder, they must specify `privilege_good` to take 1 extra.
-        If they can't produce anything, privilege_good is ignored.
+        Craftsman picks their 1 extra privilege good after everyone has auto-produced.
+        If they pass, privilege_good is None.
         """
         if self.current_phase != Phase.CRAFTSMAN or self.current_player_idx != player_idx:
             raise ValueError("Not this player's turn in Craftsman phase.")
@@ -347,46 +397,19 @@ class PuertoRicoGame:
         p = self.players[player_idx]
         has_privilege = (player_idx == self.active_role_player_idx())
         
-        production = {g: 0 for g in Good}
-        corn_plantations = sum(1 for t in p.island_board if t.tile_type == TileType.CORN_PLANTATION and t.is_occupied)
-        production[Good.CORN] = corn_plantations
-        
-        raw_indigo = sum(1 for t in p.island_board if t.tile_type == TileType.INDIGO_PLANTATION and t.is_occupied)
-        raw_sugar = sum(1 for t in p.island_board if t.tile_type == TileType.SUGAR_PLANTATION and t.is_occupied)
-        raw_tobacco = sum(1 for t in p.island_board if t.tile_type == TileType.TOBACCO_PLANTATION and t.is_occupied)
-        raw_coffee = sum(1 for t in p.island_board if t.tile_type == TileType.COFFEE_PLANTATION and t.is_occupied)
-        
-        cap_indigo = sum(b.colonists for b in p.city_board if b.building_type in (BuildingType.SMALL_INDIGO_PLANT, BuildingType.INDIGO_PLANT))
-        cap_sugar = sum(b.colonists for b in p.city_board if b.building_type in (BuildingType.SMALL_SUGAR_MILL, BuildingType.SUGAR_MILL))
-        cap_tobacco = sum(b.colonists for b in p.city_board if b.building_type == BuildingType.TOBACCO_STORAGE)
-        cap_coffee = sum(b.colonists for b in p.city_board if b.building_type == BuildingType.COFFEE_ROASTER)
-        
-        production[Good.INDIGO] = min(raw_indigo, cap_indigo)
-        production[Good.SUGAR] = min(raw_sugar, cap_sugar)
-        production[Good.TOBACCO] = min(raw_tobacco, cap_tobacco)
-        production[Good.COFFEE] = min(raw_coffee, cap_coffee)
-        
-        kinds_produced = []
-        for g in Good:
-            amount = min(production[g], self.goods_supply[g])
-            if amount > 0:
-                p.add_good(g, amount)
-                self.goods_supply[g] -= amount
-                kinds_produced.append(g)
-                
-        if p.is_building_occupied(BuildingType.FACTORY):
-            kp = len(kinds_produced)
-            if kp == 2: p.add_doubloons(1)
-            elif kp == 3: p.add_doubloons(2)
-            elif kp == 4: p.add_doubloons(3)
-            elif kp == 5: p.add_doubloons(5)
+        if not has_privilege:
+            raise ValueError("Only the privilege holder takes an action in Craftsman phase.")
             
-        if has_privilege and kinds_produced and privilege_good in kinds_produced:
-            if self.goods_supply[privilege_good] > 0:
-                p.add_good(privilege_good, 1)
-                self.goods_supply[privilege_good] -= 1
+        if privilege_good is not None:
+            if privilege_good not in getattr(self, '_craftsman_produced_kinds', []):
+                raise ValueError("Privilege good must be one of the kinds successfully produced this round.")
+            if self.goods_supply[privilege_good] <= 0:
+                raise ValueError("The selected privilege good is out of supply.")
                 
-        self._advance_phase_turn()
+            p.add_good(privilege_good, 1)
+            self.goods_supply[privilege_good] -= 1
+            
+        self._end_phase()
 
     def action_trader(self, player_idx: int, sell_good: Optional[Good]):
         """
@@ -519,18 +542,28 @@ class PuertoRicoGame:
         if len(city_assignment) != len(p.city_board):
             raise ValueError("Mismatch in city board length.")
             
+        # Validation: Player MUST place as many colonists as possible. Cannot hoard if empty valid slots exist.
+        empty_island = sum(1 for v in island_assignment if not v) # Number of empty island spaces being submitted
+        empty_city = 0
+        for i, val in enumerate(city_assignment):
+            b_type = p.city_board[i].building_type
+            max_cap = BUILDING_DATA[b_type][2]
+            empty_city += (max_cap - val)
+            
+        leftover_colonists = p.total_colonists_owned - total_placed
+        if leftover_colonists > 0 and (empty_island > 0 or empty_city > 0):
+            raise ValueError(f"Rule Violation: Must place all colonists if possible. Attempted to hoard {leftover_colonists} while having {empty_island}+{empty_city} empty spaces.")
+            
         for i, val in enumerate(island_assignment):
             p.island_board[i].is_occupied = val
             
         for i, val in enumerate(city_assignment):
             b_type = p.city_board[i].building_type
             max_cap = BUILDING_DATA[b_type][2]
-            if val < 0 or val > max_cap:
-                raise ValueError(f"Invalid colonist count for building {b_type.name}")
             p.city_board[i].colonists = val
             
         # Any remaining are returned to unplaced (San Juan)
-        p.unplaced_colonists = p.total_colonists_owned - total_placed
+        p.unplaced_colonists = leftover_colonists
         
         self._advance_phase_turn()
 

@@ -280,12 +280,13 @@ class PuertoRicoEnv(gym.Env):
         """
         Calculates reward at the end of the game based on final scores.
         Winner gets +1, others get 0 or negative relative depending on score difference.
-        Let's give the actual scores for now and we can normalize later.
+        Currently returns the raw score + tie_breaker (scaled down to act as a decimal).
         """
         scores = self.game.get_scores()
-        # The agent's reward is its own score. 
-        # Optional: shape it so winning gives massive bonus.
-        return float(scores[self.game.current_player_idx])
+        
+        # Determine ranks if needed, but for raw reward:
+        vp, tb = scores[self.game.current_player_idx]
+        return float(vp) + float(tb) * 0.0001
 
     def valid_action_mask(self):
         mask = np.zeros(200, dtype=bool)
@@ -429,10 +430,7 @@ class PuertoRicoEnv(gym.Env):
             has_privilege = (game.current_player_idx == game.active_role_player_idx())
             mask[15] = True # Can always pass 
             if has_privilege:
-                # Need to find what goods were actually produced to be strictly accurate,
-                # but to avoid duplicating engine logic, we just allow selecting any good they have
-                # or any good in supply. Engine will ignore invalid privilege goods.
-                for g in Good:
+                for g in getattr(game, '_craftsman_produced_kinds', []):
                     if game.goods_supply[g] > 0:
                         mask[93 + g.value] = True
             
