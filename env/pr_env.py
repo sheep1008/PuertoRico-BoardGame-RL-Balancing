@@ -180,10 +180,10 @@ class PuertoRicoEnv(gym.Env):
         
         if done:
             all_rewards = self._calculate_all_rewards()
-            reward = all_rewards[player_idx] # The agent who took this final action
+            reward = tuple(all_rewards)
             self._final_rewards = all_rewards # For info dict
         else:
-            reward = 0.0
+            reward = tuple([0.0] * self.num_players)
 
         return self._get_obs(), reward, done, False, self._get_info()
 
@@ -365,15 +365,8 @@ class PuertoRicoEnv(gym.Env):
             for b_type, count in game.building_supply.items():
                 if count > 0 and not p.has_building(b_type):
                     base_cost = BUILDING_DATA[b_type][0]
-                    # Column-based maximum quarry discount
-                    if base_cost <= 3:
-                        max_q = 1
-                    elif base_cost <= 6:
-                        max_q = 2
-                    elif base_cost <= 9:
-                        max_q = 3
-                    else:
-                        max_q = 4
+                    # Max reduction depends on building column. Base VP equals the column number (1 to 4).
+                    max_q = BUILDING_DATA[b_type][1]
                         
                     quarry_discount = min(active_quarries, max_q)
                     privilege_discount = 1 if has_privilege else 0
@@ -467,7 +460,7 @@ class PuertoRicoEnv(gym.Env):
                 if p.island_board[i].tile_type != TileType.EMPTY:
                     mask[69 + i] = True
             for i in range(len(p.city_board)):
-                if p.city_board[i].building_type != BuildingType.EMPTY:
+                if p.city_board[i].building_type != BuildingType.EMPTY and p.city_board[i].building_type != BuildingType.OCCUPIED_SPACE:
                     mask[81 + i] = True
 
         elif phase == Phase.CRAFTSMAN:

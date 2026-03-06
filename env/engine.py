@@ -596,16 +596,8 @@ class PuertoRicoGame:
                 
             # Quarries reduce cost
             active_quarries = sum(1 for t in p.island_board if t.tile_type == TileType.QUARRY and t.is_occupied)
-            # Max reduction depends on building column (cost category roughly). 
-            # 1-3: 1, 4-6: 2, 7-9: 3, 10: 4
-            if BUILDING_DATA[building_choice][0] <= 3:
-                max_q_reduction = 1
-            elif BUILDING_DATA[building_choice][0] <= 6:
-                max_q_reduction = 2
-            elif BUILDING_DATA[building_choice][0] <= 9:
-                max_q_reduction = 3
-            else:
-                max_q_reduction = 4
+            # Max reduction depends on building column. In Puerto Rico, base VP exactly equals the column number (1 to 4).
+            max_q_reduction = BUILDING_DATA[building_choice][1]
                 
             actual_q_reduction = min(active_quarries, max_q_reduction)
             final_cost = max(0, base_cost - actual_q_reduction)
