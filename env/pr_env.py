@@ -1,20 +1,24 @@
-import gymnasium as gym
+from pettingzoo import AECEnv
+from pettingzoo.utils.agent_selector import agent_selector
 from gymnasium import spaces
 import numpy as np
 
 from env.engine import PuertoRicoGame
 from configs.constants import Phase, Role, Good, TileType, BuildingType, BUILDING_DATA
 
-class PuertoRicoEnv(gym.Env):
-    metadata = {'render.modes': ['human']}
+class PuertoRicoEnv(AECEnv):
+    metadata = {'render.modes': ['human'], 'name': 'puerto_rico_v0'}
 
     def __init__(self, num_players: int = 4):
         super(PuertoRicoEnv, self).__init__()
         self.num_players = num_players
         self.game = None
         
-        self.action_space = self._define_action_space()
-        self.observation_space = self._define_observation_space()
+        self.possible_agents = [f"player_{i}" for i in range(self.num_players)]
+        self.agent_name_mapping = dict(zip(self.possible_agents, list(range(self.num_players))))
+        
+        self._action_spaces = {agent: self._define_action_space() for agent in self.possible_agents}
+        self._observation_spaces = {agent: self._define_observation_space() for agent in self.possible_agents}
 
     def _define_action_space(self) -> spaces.Discrete:
         # === Action Mapping ===
@@ -37,47 +41,101 @@ class PuertoRicoEnv(gym.Env):
         # 111-199: (Reserved for future use)
         return spaces.Discrete(200)
 
+    def action_space(self, agent: str) -> spaces.Discrete:
+        return self._action_spaces[agent]
+
+    def observation_space(self, agent: str) -> spaces.Dict:
+        return self._observation_spaces[agent]
+
     def _define_observation_space(self) -> spaces.Dict:
         obs_space = {
-            "global_state": spaces.Dict({
-                "vp_chips": spaces.Box(low=-50, high=200, shape=(), dtype=np.int64),
-                "colonists_supply": spaces.Discrete(100),
-                "colonists_ship": spaces.Discrete(30),
-                "goods_supply": spaces.MultiDiscrete([15, 15, 15, 15, 15]), # Coffee, Tobacco, Corn, Sugar, Indigo
-                "cargo_ships_good": spaces.MultiDiscrete([6, 6, 6]), # 0-4 for good, 5 for None
-                "cargo_ships_load": spaces.MultiDiscrete([15, 15, 15]),
-                "trading_house": spaces.MultiDiscrete([6, 6, 6, 6]), # 0-4 for good, 5 for empty
-                "role_doubloons": spaces.MultiDiscrete([20] * 8), # Doubloons per role
-                "roles_available": spaces.MultiBinary(8), # 1 if available, 0 if taken
-                "face_up_plantations": spaces.MultiDiscrete([7] * (self.num_players + 1)), # 0-5 tile types, 6 for empty slot
-                "quarry_stack": spaces.Discrete(9),
-                "governor_idx": spaces.Discrete(self.num_players),
-                "current_player": spaces.Discrete(self.num_players),
-                "current_phase": spaces.Discrete(10)
+            "observation": spaces.Dict({
+                "global_state": spaces.Dict({
+                    "vp_chips": spaces.Box(low=-50, high=200, shape=(), dtype=np.int64),
+                    "colonists_supply": spaces.Discrete(100),
+                    "colonists_ship": spaces.Discrete(30),
+                    "goods_supply": spaces.MultiDiscrete([15, 15, 15, 15, 15]), # Coffee, Tobacco, Corn, Sugar, Indigo
+                    "cargo_ships_good": spaces.MultiDiscrete([6, 6, 6]), # 0-4 for good, 5 for None
+                    "cargo_ships_load": spaces.MultiDiscrete([15, 15, 15]),
+                    "trading_house": spaces.MultiDiscrete([6, 6, 6, 6]), # 0-4 for good, 5 for empty
+                    "role_doubloons": spaces.MultiDiscrete([20] * 8), # Doubloons per role
+                    "roles_available": spaces.MultiBinary(8), # 1 if available, 0 if taken
+                    "face_up_plantations": spaces.MultiDiscrete([7] * (self.num_players + 1)), # 0-5 tile types, 6 for empty slot
+                    "quarry_stack": spaces.Discrete(9),
+                    "governor_idx": spaces.Discrete(self.num_players),
+                    "current_player": spaces.Discrete(self.num_players),
+                    "current_phase": spaces.Discrete(10)
+                }),
+                "players": spaces.Dict({
+                    f"player_{i}": spaces.Dict({
+                        "doubloons": spaces.Discrete(100),
+                        "vp_chips": spaces.Box(low=0, high=200, shape=(), dtype=np.int64),
+                        "goods": spaces.MultiDiscrete([15, 15, 15, 15, 15]), # Inventory
+                        "island_tiles": spaces.MultiDiscrete([7] * 12),      # 0-5 plantations, 6 empty
+                        "island_occupied": spaces.MultiBinary(12),
+                        "city_buildings": spaces.MultiDiscrete([25] * 12),   # 0-23 buildings, 24 empty
+                        "city_colonists": spaces.MultiDiscrete([4] * 12),    # Up to 3 per building, 0-3 range (size 4)
+                        "unplaced_colonists": spaces.Discrete(20)
+                    }) for i in range(self.num_players)
+                })
             }),
-            "players": spaces.Tuple([
-                spaces.Dict({
-                    "doubloons": spaces.Discrete(100),
-                    "vp_chips": spaces.Box(low=0, high=200, shape=(), dtype=np.int64),
-                    "goods": spaces.MultiDiscrete([15, 15, 15, 15, 15]), # Inventory
-                    "island_tiles": spaces.MultiDiscrete([7] * 12),      # 0-5 plantations, 6 empty
-                    "island_occupied": spaces.MultiBinary(12),
-                    "city_buildings": spaces.MultiDiscrete([25] * 12),   # 0-23 buildings, 24 empty
-                    "city_colonists": spaces.MultiDiscrete([4] * 12),    # Up to 3 per building, 0-3 range (size 4)
-                    "unplaced_colonists": spaces.Discrete(20)
-                }) for _ in range(self.num_players)
-            ])
+            "action_mask": spaces.Box(low=0, high=1, shape=(200,), dtype=np.int8)
         }
         return spaces.Dict(obs_space)
 
     def reset(self, seed=None, options=None):
-        super().reset(seed=seed)
+        if seed is not None:
+            # Note: We should ideally pass seed to the engine, but for now we'll rely on global random
+            import random
+            random.seed(seed)
+            np.random.seed(seed)
+            
+        self.agents = self.possible_agents[:]
+        self.rewards = {agent: 0.0 for agent in self.agents}
+        self._cumulative_rewards = {agent: 0.0 for agent in self.agents}
+        self.terminations = {agent: False for agent in self.agents}
+        self.truncations = {agent: False for agent in self.agents}
+        self.infos = {agent: {} for agent in self.agents}
+
         self.game = PuertoRicoGame(self.num_players)
         self.game.start_game()
-        return self._get_obs(), self._get_info()
+        
+        # Determine starting player based on engine
+        self._agent_selector = agent_selector(self.agents)
+        self.agent_selection = f"player_{self.game.current_player_idx}"
+        
+        # Populate initial info
+        for agent in self.agents:
+            self.infos[agent] = self._get_info()
+
+    def observe(self, agent: str):
+        obs = self._get_obs()
+        
+        # Action mask should be generated for the requested agent
+        # If it's not their turn, technically their mask is all 0.
+        # But commonly we just return the full obs dictionary.
+        agent_idx = self.agent_name_mapping[agent]
+        if agent_idx == self.game.current_player_idx and not (self.terminations[agent] or self.truncations[agent]):
+            mask = self.valid_action_mask().astype(np.int8)
+        else:
+            mask = np.zeros(200, dtype=np.int8)
+            
+        # PettingZoo standard convention requires action_mask inside the top-level Dict
+        return {
+            "observation": obs,
+            "action_mask": mask
+        }
 
     def step(self, action):
-        player_idx = self.game.current_player_idx
+        if (
+            self.terminations[self.agent_selection]
+            or self.truncations[self.agent_selection]
+        ):
+            self._was_dead_step(action)
+            return
+
+        agent = self.agent_selection
+        player_idx = self.agent_name_mapping[agent]
         p = self.game.players[player_idx]
         
         try:
@@ -172,20 +230,38 @@ class PuertoRicoEnv(gym.Env):
                 self.game.action_hacienda_draw(player_idx)
                             
         except ValueError as e:
-            # Invalid action taken, though mask should prevent this.
-            # Penalize heavily if happens
-            return self._get_obs(), -50.0, True, False, {"error": str(e)}
+            # Invalid action taken. AECEnv requires handling this gracefully or crashing.
+            # Penalize heavily and terminate this agent. Since Puerto Rico is rigid, if one player is terminated, the game usually breaks.
+            # We'll terminate the game for everyone with a negative reward for the offender.
+            self.rewards[agent] = -50.0
+            for a in self.agents:
+                self.terminations[a] = True
+                self.infos[a]["error"] = str(e)
+            self._accumulate_rewards()
+            
+            # Since game is over, agent_selection logic doesn't matter much, just pass to next
+            self.agent_selection = self._agent_selector.next()
+            return
 
         done = self.game.check_game_end()
         
         if done:
             all_rewards = self._calculate_all_rewards()
-            reward = tuple(all_rewards)
-            self._final_rewards = all_rewards # For info dict
+            for idx, r in enumerate(all_rewards):
+                agent_name = f"player_{idx}"
+                self.rewards[agent_name] = r
+                self.terminations[agent_name] = True
+            
+            final_scores = self.game.get_scores()
+            for a in self.agents:
+                self.infos[a]["final_scores"] = final_scores
         else:
-            reward = tuple([0.0] * self.num_players)
+            for a in self.agents:
+                self.rewards[a] = 0.0
+                self.infos[a] = self._get_info()
 
-        return self._get_obs(), reward, done, False, self._get_info()
+        self.agent_selection = f"player_{self.game.current_player_idx}"
+        self._accumulate_rewards()
 
     def _handle_pass(self, player_idx: int):
         if self.game.current_phase == Phase.SETTLER:
@@ -218,7 +294,9 @@ class PuertoRicoEnv(gym.Env):
         for ship in game.cargo_ships:
             cargo_good.append(ship.good_type if ship.good_type is not None else 5)
             cargo_load.append(ship.current_load)
-        # Pad cargo ships up to 3 (for 3-5 players, there are exactly 3 ships)
+        # Pad cargo ships up to 3 (for 2-5 players, there are exactly 3 ships max)
+        cargo_good += [5] * (3 - len(cargo_good))
+        cargo_load += [0] * (3 - len(cargo_load))
         
         trading_house = [g for g in game.trading_house]
         trading_house += [5] * (4 - len(trading_house))
@@ -243,8 +321,8 @@ class PuertoRicoEnv(gym.Env):
         
         global_state = {
             "vp_chips": np.array(game.vp_chips, dtype=np.int64),
-            "colonists_supply": game.colonists_supply,
-            "colonists_ship": game.colonists_ship,
+            "colonists_supply": np.array(game.colonists_supply, dtype=np.int64),
+            "colonists_ship": np.array(game.colonists_ship, dtype=np.int64),
             "goods_supply": np.array([game.goods_supply[Good(i)] for i in range(5)], dtype=np.int64),
             "cargo_ships_good": np.array(cargo_good, dtype=np.int64),
             "cargo_ships_load": np.array(cargo_load, dtype=np.int64),
@@ -252,14 +330,14 @@ class PuertoRicoEnv(gym.Env):
             "role_doubloons": np.array(role_doubloons, dtype=np.int64),
             "roles_available": np.array(roles_available, dtype=np.int8),
             "face_up_plantations": np.array(face_up_plantations, dtype=np.int64),
-            "quarry_stack": game.quarry_stack,
-            "governor_idx": game.governor_idx,
-            "current_player": game.current_player_idx,
-            "current_phase": game.current_phase if game.current_phase is not None else 9
+            "quarry_stack": np.array(game.quarry_stack, dtype=np.int64),
+            "governor_idx": np.array(game.governor_idx, dtype=np.int64),
+            "current_player": np.array(game.current_player_idx, dtype=np.int64),
+            "current_phase": np.array(game.current_phase if game.current_phase is not None else 9, dtype=np.int64)
         }
 
         # Player States
-        players_obs = []
+        players_obs = {}
         for i in range(self.num_players):
             p = game.players[i]
             
@@ -280,20 +358,20 @@ class PuertoRicoEnv(gym.Env):
             city_col += [0] * (12 - len(city_col))
             
             player_dict = {
-                "doubloons": p.doubloons,
+                "doubloons": np.array(p.doubloons, dtype=np.int64),
                 "vp_chips": np.array(p.vp_chips, dtype=np.int64),
                 "goods": np.array([p.goods[Good(g)] for g in range(5)], dtype=np.int64),
                 "island_tiles": np.array(island_tiles, dtype=np.int64),
                 "island_occupied": np.array(island_occ, dtype=np.int8),
                 "city_buildings": np.array(city_buildings, dtype=np.int64),
                 "city_colonists": np.array(city_col, dtype=np.int64),
-                "unplaced_colonists": p.unplaced_colonists
+                "unplaced_colonists": np.array(p.unplaced_colonists, dtype=np.int64)
             }
-            players_obs.append(player_dict)
+            players_obs[f"player_{i}"] = player_dict
 
         return {
             "global_state": global_state,
-            "players": tuple(players_obs)
+            "players": players_obs
         }
 
     def _get_info(self):
