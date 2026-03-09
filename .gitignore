@@ -1,0 +1,5 @@
+# Ignore runs folder
+runs
+
+# Ignore models folder
+models
