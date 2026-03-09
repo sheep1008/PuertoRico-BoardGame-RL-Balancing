@@ -533,7 +533,22 @@ class PuertoRicoEnv(AECEnv):
                     
         elif phase == Phase.MAYOR:
             # Toggle actions
-            mask[15] = True # Pass (Submit)
+            
+            # Check if passing is allowed
+            total_placed = sum([1 for t in p.island_board if t.is_occupied]) + sum([b.colonists for b in p.city_board])
+            empty_island = sum([1 for t in p.island_board if t.tile_type != TileType.EMPTY and not t.is_occupied])
+            empty_city = 0
+            for b in p.city_board:
+                if b.building_type != BuildingType.EMPTY and b.building_type != BuildingType.OCCUPIED_SPACE:
+                    max_cap = BUILDING_DATA[b.building_type][2]
+                    empty_city += (max_cap - b.colonists)
+                    
+            leftover_colonists = p.total_colonists_owned - total_placed
+            can_pass = (leftover_colonists == 0) or (empty_island == 0 and empty_city == 0)
+            
+            if can_pass:
+                mask[15] = True # Pass (Submit)
+                
             for i in range(len(p.island_board)):
                 if p.island_board[i].tile_type != TileType.EMPTY:
                     mask[69 + i] = True
