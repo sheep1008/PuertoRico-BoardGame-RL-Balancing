@@ -4,10 +4,8 @@ runs/
 # Ignore models folder
 models/
 
-# Ignore pdf and txt
-puerto-rico-2players-rule.pdf
-puerto-rico-rules-en.pdf
-rules.txt
+# Ignore rule documents
+rule_documents/
 
 # Ignore folders starts with '.'
 __pycache__
