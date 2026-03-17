@@ -295,6 +295,10 @@ class PuertoRicoEnv(AECEnv):
                 if i != acting_idx:
                     self.rewards[a_name] = 0.0
                 self.infos[a_name] = self._get_info()
+                # Expose phase ID as int for hierarchical agent routing
+                self.infos[a_name]["current_phase_id"] = int(
+                    self.game.current_phase if self.game.current_phase is not None else 9
+                )
 
         self.agent_selection = f"player_{self.game.current_player_idx}"
         self._accumulate_rewards()
