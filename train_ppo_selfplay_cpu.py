@@ -10,29 +10,31 @@ import numpy as np
 from collections import deque
 from torch.utils.tensorboard import SummaryWriter
 
-# 프로젝트 모듈 임포트
+# 프로젝트 내부 모듈 임포트
 from env.pr_env import PuertoRicoEnv
 from utils.env_wrappers import flatten_dict_observation, get_flattened_obs_dim
 from agents.ppo_agent import Agent
 from configs.constants import Role, BuildingType, Good
 
 # --- CPU 환경 최적화 하이퍼파라미터 ---
+# 일반적인 노트북 사양(4~8코어)에 맞춰 설정되었습니다.
 NUM_PLAYERS = 3
-NUM_ENVS = 4          # 노트북 CPU 코어 수에 맞춰 조절 (보통 4~8 권장)
-STEPS_PER_ENV = 256   # 한 워커당 수집할 스텝 (CPU 환경에선 작게 설정하여 빠른 순환 유도)
-BATCH_SIZE = NUM_ENVS * STEPS_PER_ENV  # 총 배치 사이즈 (예: 1024)
-MINIBATCH_SIZE = 64   # CPU 연산 효율을 위해 작은 미니배치 사용
+NUM_ENVS = 4          # 노트북의 물리 코어 수에 맞춰 4~6 권장
+STEPS_PER_ENV = 512   # CPU 환경에서는 배치를 작게 유지하여 회전 속도를 높임
+BATCH_SIZE = NUM_ENVS * STEPS_PER_ENV 
+MINIBATCH_SIZE = 128  # CPU 캐시 효율을 위해 작은 미니배치 사용
 UPDATE_EPOCHS = 4
 LEARNING_RATE = 3e-4
 GAMMA = 0.99
 GAE_LAMBDA = 0.95
 CLIP_COEF = 0.2
-ENT_COEF = 0.03       # 전략 탐색 유지
+ENT_COEF = 0.03       # 전략 탐색 유지를 위해 유지
 VF_COEF = 0.5
 MAX_GRAD_NORM = 0.5
 
-# Self-play 설정
-SNAPSHOT_INTERVAL = 10
+# Self-play 및 저장 설정
+TOTAL_TIMESTEPS = 10_000_000
+SNAPSHOT_INTERVAL = 20
 OPPONENT_POOL_SIZE = 10
 LATEST_POLICY_PROB = 0.7 
 LEARNING_PLAYER_IDX = 0
@@ -43,22 +45,19 @@ def sample_opponent_weights(opponent_pool: list, current_weights: dict) -> dict:
     return random.choice(opponent_pool)
 
 def rollout_worker(worker_id, shared_weights_dict, opponent_pool, steps_per_env, obs_dim, action_dim, return_queue):
-    # CPU 환경에서는 가급적 무거운 렌더링이나 복잡한 로직을 최소화한 환경 사용
-    env = PuertoRicoEnv(num_players=NUM_PLAYERS, max_game_steps=1000)
+    """데이터 수집 워커: 에이전트의 전략 지표를 상세히 기록함"""
+    env = PuertoRicoEnv(num_players=NUM_PLAYERS, max_game_steps=1200)
     env.reset()
     obs_space = env.observation_space(env.possible_agents[0])["observation"]
     
     local_agent = Agent(obs_dim=obs_dim, action_dim=action_dim)
     local_opponent = Agent(obs_dim=obs_dim, action_dim=action_dim)
-    
     local_agent.load_state_dict(shared_weights_dict)
-    local_agent.eval()
     
-    opp_weights = sample_opponent_weights(opponent_pool, shared_weights_dict)
-    local_opponent.load_state_dict(opp_weights)
+    # 가중치 고정 (평가 모드)
+    local_agent.eval()
     local_opponent.eval()
 
-    # 버퍼 초기화
     obs_buf = np.zeros((steps_per_env, obs_dim), dtype=np.float32)
     mask_buf = np.zeros((steps_per_env, action_dim), dtype=np.float32)
     act_buf = np.zeros((steps_per_env,), dtype=np.float32)
@@ -67,13 +66,12 @@ def rollout_worker(worker_id, shared_weights_dict, opponent_pool, steps_per_env,
     done_buf = np.zeros((steps_per_env,), dtype=np.float32)
     val_buf = np.zeros((steps_per_env,), dtype=np.float32)
     
-    # 텐서보드용 상세 지표 수집
     stats = {
         "games": 0, "wins": 0, "total_score": 0.0,
         "vp_chips": 0.0, "building_vp": 0.0,
         "role_counts": np.zeros(8),
         "building_counts": np.zeros(23),
-        "produced_goods": np.zeros(5)
+        "produced_goods": np.zeros( Good.INDIGO.value + 1 if hasattr(Good, 'INDIGO') else 5 )
     }
     
     step_idx = 0
@@ -97,11 +95,11 @@ def rollout_worker(worker_id, shared_weights_dict, opponent_pool, steps_per_env,
                     learner_score = final_scores[LEARNING_PLAYER_IDX][0]
                     stats["total_score"] += learner_score
                     
-                    # 승리 판정: 가장 높은 점수를 얻었는지 확인
+                    # 승률 계산
                     max_opp = max([final_scores[j][0] for j in range(NUM_PLAYERS) if j != LEARNING_PLAYER_IDX])
                     if learner_score >= max_opp: stats["wins"] += 1
                     
-                    # 건물/상품/VP 분석
+                    # 전략 분석 지표 수집
                     p_obj = env.game.players[LEARNING_PLAYER_IDX]
                     stats["vp_chips"] += p_obj.vp_chips
                     stats["building_vp"] += (learner_score - p_obj.vp_chips)
@@ -137,21 +135,35 @@ def rollout_worker(worker_id, shared_weights_dict, opponent_pool, steps_per_env,
             env.step(act_idx)
             if step_idx >= steps_per_env: break
 
-    # Next value for GAE
     with torch.no_grad():
         _, _, _, next_val = local_agent.get_action_and_value(torch.as_tensor(flat_obs).unsqueeze(0), torch.as_tensor(mask).unsqueeze(0))
 
     return_queue.put({"stats": stats, "next_val": next_val.item(), "data": (obs_buf, mask_buf, act_buf, logp_buf, rew_buf, done_buf, val_buf)})
 
+def compute_gae_batched(rew_buf, done_buf, val_buf, next_val_arr, gamma, gae_lambda):
+    advantages = np.zeros_like(rew_buf)
+    num_envs, num_steps = rew_buf.shape
+    lastgaelam = np.zeros(num_envs)
+    for t in reversed(range(num_steps)):
+        if t == num_steps - 1:
+            nextnonterminal = 1.0 - done_buf[:, t]
+            nextvalues = next_val_arr * nextnonterminal
+        else:
+            nextnonterminal = 1.0 - done_buf[:, t + 1]
+            nextvalues = val_buf[:, t + 1] * nextnonterminal
+        delta = rew_buf[:, t] + gamma * nextvalues - val_buf[:, t]
+        advantages[:, t] = delta + gamma * gae_lambda * nextnonterminal * lastgaelam
+        lastgaelam = advantages[:, t]
+    return advantages, advantages + val_buf
+
 def train():
-    # Windows/macOS 호환성을 위해 spawn 사용 (CPU에서도 안전함)
     try: mp.set_start_method('spawn', force=True)
     except RuntimeError: pass
     
     device = torch.device("cpu")
     run_name = f"PPO_PR_CPU_{int(time.time())}"
     writer = SummaryWriter(f"runs/{run_name}")
-    print(f"[{device}] CPU 최적화 훈련 모드 시작...")
+    print(f"[{device}] CPU 최적화 버전 훈련 시작...")
 
     temp_env = PuertoRicoEnv(num_players=NUM_PLAYERS)
     obs_dim = get_flattened_obs_dim(temp_env.observation_space(temp_env.possible_agents[0])["observation"])
@@ -164,9 +176,14 @@ def train():
     opponent_pool = []
     global_step = 0
     win_history = deque(maxlen=100)
+    os.makedirs("models", exist_ok=True)
 
-    for update in range(1, (10_000_000 // BATCH_SIZE) + 1):
-        # 1. 병렬 수집
+    for update in range(1, (TOTAL_TIMESTEPS // BATCH_SIZE) + 1):
+        update_start = time.time()
+        frac = 1.0 - (update - 1.0) / (TOTAL_TIMESTEPS // BATCH_SIZE)
+        optimizer.param_groups[0]["lr"] = frac * LEARNING_RATE
+
+        # 1. 데이터 수집
         shared_weights = {k: v.cpu() for k, v in agent.state_dict().items()}
         return_queue = mp.Queue()
         processes = [mp.Process(target=rollout_worker, args=(i, shared_weights, opponent_pool, STEPS_PER_ENV, obs_dim, action_dim, return_queue)) for i in range(NUM_ENVS)]
@@ -174,24 +191,61 @@ def train():
         results = [return_queue.get() for _ in range(NUM_ENVS)]
         for p in processes: p.join()
 
-        # 2. 데이터 수합 및 통계 기록
+        # 2. 데이터 통합
+        obs_b = np.stack([r["data"][0] for r in results]).reshape(-1, obs_dim)
+        mask_b = np.stack([r["data"][1] for r in results]).reshape(-1, action_dim)
+        act_b = np.stack([r["data"][2] for r in results]).reshape(-1)
+        logp_b = np.stack([r["data"][3] for r in results]).reshape(-1)
+        rew_b = np.stack([r["data"][4] for r in results])
+        done_b = np.stack([r["data"][5] for r in results])
+        val_b = np.stack([r["data"][6] for r in results])
+        next_val_arr = np.array([r["next_val"] for r in results])
+
+        adv_b, ret_b = compute_gae_batched(rew_b, done_b, val_b, next_val_arr, GAMMA, GAE_LAMBDA)
+        
+        obs_t = torch.as_tensor(obs_b, device=device)
+        mask_t = torch.as_tensor(mask_b, device=device)
+        act_t = torch.as_tensor(act_b, device=device)
+        logp_t = torch.as_tensor(logp_b, device=device)
+        adv_t = torch.as_tensor(adv_b.reshape(-1), device=device)
+        ret_t = torch.as_tensor(ret_b.reshape(-1), device=device)
+
+        # 3. PPO 업데이트
+        b_inds = np.arange(BATCH_SIZE)
+        for epoch in range(UPDATE_EPOCHS):
+            np.random.shuffle(b_inds)
+            for start in range(0, BATCH_SIZE, MINIBATCH_SIZE):
+                mb = b_inds[start:start+MINIBATCH_SIZE]
+                _, newlogp, entropy, newval = agent.get_action_and_value(obs_t[mb], mask_t[mb], act_t[mb])
+                ratio = (newlogp - logp_t[mb]).exp()
+                mb_adv = (adv_t[mb] - adv_t[mb].mean()) / (adv_t[mb].std() + 1e-8)
+                pg_loss = torch.max(-mb_adv * ratio, -mb_adv * torch.clamp(ratio, 1-CLIP_COEF, 1+CLIP_COEF)).mean()
+                v_loss = 0.5 * ((newval.view(-1) - ret_t[mb])**2).mean()
+                loss = pg_loss - ENT_COEF * entropy.mean() + v_loss * VF_COEF
+                optimizer.zero_grad()
+                loss.backward()
+                nn.utils.clip_grad_norm_(agent.parameters(), MAX_GRAD_NORM)
+                optimizer.step()
+
+        # 4. 통계 기록
+        global_step += BATCH_SIZE
         total_games = sum(r["stats"]["games"] for r in results)
         if total_games > 0:
-            avg_win = sum(r["stats"]["wins"] for r in results) / total_games
-            win_history.append(avg_win)
+            win_rate = sum(r["stats"]["wins"] for r in results) / total_games
+            win_history.append(win_rate)
             writer.add_scalar("Performance/WinRate", np.mean(win_history), global_step)
             writer.add_scalar("Strategy/VP_Shipping", sum(r["stats"]["vp_chips"] for r in results) / total_games, global_step)
-            # 건물별 선호도 기록
+            writer.add_scalar("Strategy/VP_Building", sum(r["stats"]["building_vp"] for r in results) / total_games, global_step)
+            
             bldg_dist = np.sum([r["stats"]["building_counts"] for r in results], axis=0)
             for b_idx in range(23):
                 writer.add_scalar(f"Buildings/{BuildingType(b_idx).name}", bldg_dist[b_idx] / total_games, global_step)
 
-        # 3. PPO 업데이트 (CPU 환경에선 큰 텐서 연산 시 메모리 주의)
-        # (GAE 및 업데이트 로직은 이전과 동일하되 device=device 반영)
-        # ... (이하 PPO 업데이트 로직 중략, GPU 버전과 동일하나 CPU 장치 사용) ...
-        
-        global_step += BATCH_SIZE
-        print(f"업데이트 {update} | 승률: {np.mean(win_history):.1%} | 스텝: {global_step}")
+        if update % SNAPSHOT_INTERVAL == 0:
+            opponent_pool.append(copy.deepcopy(shared_weights))
+            torch.save(agent.state_dict(), f"models/{run_name}_step_{global_step}.pth")
+
+        print(f"Update {update} | WinRate: {np.mean(win_history):.1%} | Step: {global_step} | SPS: {int(BATCH_SIZE/(time.time()-update_start))}")
 
     writer.close()
 
