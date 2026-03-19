@@ -399,25 +399,53 @@ class PuertoRicoEnv(AECEnv):
         return info
 
     def _compute_potential(self, player_idx: int) -> float:
-        """Potential function for reward shaping (Ng et al., 1999).
-        Higher potential = more developed player state.
-        Provably preserves optimal policy when used as: gamma * Phi(s') - Phi(s).
-        """
-        p = self.game.players[player_idx]
-        phi = 0.0
-        phi += p.vp_chips * 0.05                  # VP chip accumulation
-        phi += p.doubloons * 0.01                  # Economic power
-        # Occupied production buildings contribute to future goods production
-        occupied_production = sum(
-            1 for b in p.city_board
-            if BUILDING_DATA[b.building_type][5] is not None and b.colonists > 0
-        )
-        phi += occupied_production * 0.03
-        phi += sum(p.goods.values()) * 0.005       # Current stockpile
-        # Occupied island tiles = productive land
-        occupied_island = sum(1 for t in p.island_board if t.is_occupied)
-        phi += occupied_island * 0.01
-        return phi
+            """
+            보완된 Potential Function (Reward Shaping):
+            선적과 건축의 균형을 맞추기 위해 건물 자체의 가치를 반영합니다.
+            """
+            p = self.game.players[player_idx]
+            phi = 0.0
+
+            # 1. 선적 점수 (VP Chips): 기존 0.05 유지
+            phi += p.vp_chips * 0.05
+
+            # 2. 건물 가치 (Building Victory Points): 핵심 추가 사항
+            # 건물을 짓는 행위(돈 지출)가 잠재력 하락이 아닌 상승으로 이어지게 합니다.
+            building_vps = 0.0
+            occupied_bonus = 0.0
+            
+            for b in p.city_board:
+                b_type = b.building_type
+                # 빈 공간이나 점유된 공간(대형 건물의 2칸째)은 제외
+                if b_type in (BuildingType.EMPTY, BuildingType.OCCUPIED_SPACE):
+                    continue
+                
+                # BUILDING_DATA[b_type][1]은 해당 건물의 기본 승점(Victory Point)입니다.
+                base_vp = BUILDING_DATA[b_type][1]
+                building_vps += base_vp
+                
+                # 이주민이 배치된 건물에는 추가 가중치 (작동 중인 엔진임을 의미)
+                if b.colonists > 0:
+                    occupied_bonus += base_vp * 0.5  # 가동 중인 건물은 50%의 가치 추가
+
+            # 건물 승점 가중치: 선적(0.05)과 경쟁할 수 있도록 설정
+            phi += building_vps * 0.05
+            # 가동 중인 건물 보너스: 효율적인 시장(Mayor) 액션 유도
+            phi += occupied_bonus * 0.02
+
+            # 3. 경제적 자산 (Doubloons): 0.01 유지
+            # 건물을 지으면 돈이 줄어들지만(phi 감소), 위에서 building_vps가 증가(phi 증가)하므로
+            # 전체 potential은 상승하게 되어 에이전트가 기꺼이 건물을 짓게 됩니다.
+            phi += p.doubloons * 0.01
+
+            # 4. 자원 보유량 (Goods): 0.005 유지
+            phi += sum(p.goods.values()) * 0.005
+
+            # 5. 섬 개발도 (Occupied Island Tiles): 0.01 유지
+            occupied_island = sum(1 for t in p.island_board if t.is_occupied)
+            phi += occupied_island * 0.01
+
+            return phi
 
     def _calculate_all_rewards(self) -> list[float]:
         """Terminal reward: competitive win/loss + score margin.
